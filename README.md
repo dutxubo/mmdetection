@@ -3,6 +3,11 @@
 
 **News**: We released the technical report on [ArXiv](https://arxiv.org/abs/1906.07155).
 
+<<<<<<< HEAD
+=======
+Documentation: https://mmdetection.readthedocs.io/
+
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 ## Introduction
 
 The master branch works with **PyTorch 1.1** or higher.
@@ -36,6 +41,7 @@ Apart from MMDetection, we also released a library [mmcv](https://github.com/ope
 
 This project is released under the [Apache 2.0 license](LICENSE).
 
+<<<<<<< HEAD
 ## Updates
 
 v1.0rc0 (27/07/2019)
@@ -81,6 +87,12 @@ v0.5.2 (21/10/2018)
 v0.5.1 (20/10/2018)
 - Add BBoxAssigner and BBoxSampler, the `train_cfg` field in config files are restructured.
 - `ConvFCRoIHead` / `SharedFCRoIHead` are renamed to `ConvFCBBoxHead` / `SharedFCBBoxHead` for consistency.
+=======
+## Changelog
+
+v1.0rc1 was released in 13/12/2019, with more than 20 bug fixes and 30 improvements and new features.
+Please refer to [CHANGELOG.md](docs/CHANGELOG.md) for details and history versions.
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 
 ## Benchmark and model zoo
 
@@ -99,12 +111,23 @@ Results and models are available in the [Model zoo](docs/MODEL_ZOO.md).
 | RetinaNet          | ✓        | ✓        | ☐        | ✗        | ✓     |
 | GHM                | ✓        | ✓        | ☐        | ✗        | ✓     |
 | Mask Scoring R-CNN | ✓        | ✓        | ☐        | ✗        | ✓     |
+<<<<<<< HEAD
 | FCOS               | ✓        | ✓        | ☐        | ✗        | ✓     |
+=======
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 | Double-Head R-CNN  | ✓        | ✓        | ☐        | ✗        | ✓     |
 | Grid R-CNN (Plus)  | ✓        | ✓        | ☐        | ✗        | ✓     |
 | Hybrid Task Cascade| ✓        | ✓        | ☐        | ✗        | ✓     |
 | Libra R-CNN        | ✓        | ✓        | ☐        | ✗        | ✓     |
 | Guided Anchoring   | ✓        | ✓        | ☐        | ✗        | ✓     |
+<<<<<<< HEAD
+=======
+| FCOS               | ✓        | ✓        | ☐        | ✗        | ✓     |
+| RepPoints          | ✓        | ✓        | ☐        | ✗        | ✓     |
+| Foveabox           | ✓        | ✓        | ☐        | ✗        | ✓     |
+| FreeAnchor         | ✓        | ✓        | ☐        | ✗        | ✓     |
+| NAS-FPN            | ✓        | ✓        | ☐        | ✗        | ✓     |
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 
 Other features
 - [x] DCNv2
@@ -157,4 +180,8 @@ If you use this toolbox or benchmark in your research, please cite this project.
 
 ## Contact
 
+<<<<<<< HEAD
 This repo is currently maintained by Kai Chen ([@hellock](http://github.com/hellock)), Jiangmiao Pang ([@OceanPang](https://github.com/OceanPang)), Jiaqi Wang ([@myownskyW7](https://github.com/myownskyW7)) and Yuhang Cao ([@yhcao6](https://github.com/yhcao6)).
+=======
+This repo is currently maintained by Kai Chen ([@hellock](http://github.com/hellock)), Yuhang Cao ([@yhcao6](https://github.com/yhcao6)), Wenwei Zhang ([@ZwwWayne](https://github.com/ZwwWayne)), Jiangmiao Pang ([@OceanPang](https://github.com/OceanPang)) and Jiaqi Wang ([@myownskyW7](https://github.com/myownskyW7)).
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8

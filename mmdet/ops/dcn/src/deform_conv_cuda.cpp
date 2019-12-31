@@ -149,7 +149,10 @@ void shape_check(at::Tensor input, at::Tensor offset, at::Tensor *gradOutput,
   }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 int deform_conv_forward_cuda(at::Tensor input, at::Tensor weight,
                              at::Tensor offset, at::Tensor output,
                              at::Tensor columns, at::Tensor ones, int kW,
@@ -196,7 +199,10 @@ int deform_conv_forward_cuda(at::Tensor input, at::Tensor weight,
 
   output = output.view({batchSize / im2col_step, im2col_step, nOutputPlane,
                         outputHeight, outputWidth});
+<<<<<<< HEAD
   
+=======
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
   columns = at::zeros(
       {nInputPlane * kW * kH, im2col_step * outputHeight * outputWidth},
       input.options());
@@ -835,4 +841,4 @@ at::Tensor deform_conv_jit_forward_cuda(at::Tensor input, at::Tensor weight,
 static auto registry =
     torch::jit::RegisterOperators("my_ops::deform_conv_jit_forward_cuda", &deform_conv_jit_forward_cuda);
     //.op("my_ops::modulated_deform_conv_cuda_forward", &modulated_deform_conv_cuda_forward);
-    
+

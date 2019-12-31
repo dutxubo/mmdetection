@@ -1,6 +1,5 @@
 from ..registry import DETECTORS
 from .two_stage import TwoStageDetector
-import torch
 
 
 @DETECTORS.register_module
@@ -26,4 +25,3 @@ class FasterRCNN(TwoStageDetector):
             train_cfg=train_cfg,
             test_cfg=test_cfg,
             pretrained=pretrained)
-

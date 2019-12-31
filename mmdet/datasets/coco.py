@@ -41,6 +41,7 @@ class CocoDataset(CustomDataset):
     #                  'txt_c', 'txt_n', 'txt_y', 'txt_z', 
     #                'logo_miss', 'txt_miss'}
 
+
     def load_annotations(self, ann_file):
         self.coco = COCO(ann_file)
         self.cat_ids = self.coco.getCatIds()
@@ -61,14 +62,13 @@ class CocoDataset(CustomDataset):
         ann_ids = self.coco.getAnnIds(imgIds=[img_id])
         ann_info = self.coco.loadAnns(ann_ids)
         return self._parse_ann_info(self.img_infos[idx], ann_info)
-    
-    # original code
+
     def _filter_imgs_ori(self, min_size=32):
         """Filter images too small or without ground truths."""
         valid_inds = []
         ids_with_ann = set(_['image_id'] for _ in self.coco.anns.values())
         for i, img_info in enumerate(self.img_infos):
-            if self.img_ids[i] not in ids_with_ann:
+            if self.filter_empty_gt and self.img_ids[i] not in ids_with_ann:
                 continue
             if min(img_info['width'], img_info['height']) >= min_size:
                 valid_inds.append(i)
@@ -82,6 +82,7 @@ class CocoDataset(CustomDataset):
             if min(img_info['width'], img_info['height']) >= min_size:
                 valid_inds.append(i)
         return valid_inds
+
 
     def _parse_ann_info(self, img_info, ann_info):
         """Parse bbox and mask annotation.

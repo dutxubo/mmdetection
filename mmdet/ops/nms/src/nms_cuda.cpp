@@ -14,6 +14,7 @@ at::Tensor nms(const at::Tensor& dets, const float threshold) {
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("nms", &nms, "non-maximum suppression");
+
 }
 
 
@@ -27,3 +28,5 @@ at::Tensor nms_jit(const at::Tensor& dets, double threshold) {
 
 #include <torch/script.h>
 static auto registry = torch::jit::RegisterOperators("my_ops::nms_jit", &nms_jit);
+
+

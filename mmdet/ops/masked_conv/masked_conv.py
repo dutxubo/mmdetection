@@ -60,6 +60,7 @@ class MaskedConv2dFunction(Function):
 
 masked_conv2d = MaskedConv2dFunction.apply
 
+
 def masked_conv2d_jit(features, mask, weight, bias, padding=0, stride=1):
     
     assert mask.dim() == 3 and mask.size(0) == 1
@@ -107,6 +108,7 @@ from .. import ops_mode
 if ops_mode.mode == 'jit':
     masked_conv2d = masked_conv2d_jit
 
+
 class MaskedConv2d(nn.Conv2d):
     """A MaskedConv2d which inherits the official Conv2d.
 
@@ -132,11 +134,4 @@ class MaskedConv2d(nn.Conv2d):
             return super(MaskedConv2d, self).forward(input)
         else:
             return masked_conv2d(input, mask, self.weight, self.bias,
-                                 self.padding)
-        
-    def forward_jit(self, input, mask=None):
-        if mask is None:  # fallback to the normal Conv2d
-            return super(MaskedConv2d, self).forward(input)
-        else:
-            return masked_conv2d_jit(input, mask, self.weight, self.bias,
                                  self.padding)

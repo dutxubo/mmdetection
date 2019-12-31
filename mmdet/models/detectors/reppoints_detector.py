@@ -79,6 +79,7 @@ class RepPointsDetector(SingleStageDetector):
         bbox_results = bbox2result(_det_bboxes, det_labels,
                                    self.bbox_head.num_classes)
         return bbox_results
+
     
     
     def forward_jit(self, img, img_meta, rescale=True, nms=False ):

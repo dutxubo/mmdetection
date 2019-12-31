@@ -9,8 +9,13 @@ model = dict(
                 num_modules=1,
                 num_branches=1,
                 block='BOTTLENECK',
+<<<<<<< HEAD
                 num_blocks=(4,),
                 num_channels=(64,)),
+=======
+                num_blocks=(4, ),
+                num_channels=(64, )),
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
             stage2=dict(
                 num_modules=1,
                 num_branches=2,
@@ -29,10 +34,14 @@ model = dict(
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
                 num_channels=(18, 36, 72, 144)))),
+<<<<<<< HEAD
     neck=dict(
         type='HRFPN',
         in_channels=[18, 36, 72, 144],
         out_channels=256),
+=======
+    neck=dict(type='HRFPN', in_channels=[18, 36, 72, 144], out_channels=256),
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
     rpn_head=dict(
         type='RPNHead',
         in_channels=256,

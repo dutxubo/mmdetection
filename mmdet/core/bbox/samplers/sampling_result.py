@@ -16,6 +16,7 @@ class SamplingResult(object):
         self.pos_gt_bboxes = gt_bboxes[self.pos_assigned_gt_inds, :]
         if gt_keypoints is not None:
             self.pos_gt_keypoints = gt_keypoints[self.pos_assigned_gt_inds, :]
+
         if assign_result.labels is not None:
             self.pos_gt_labels = assign_result.labels[pos_inds]
         else:

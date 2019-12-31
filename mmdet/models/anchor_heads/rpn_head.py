@@ -5,7 +5,6 @@ from mmcv.cnn import normal_init
 
 from mmdet.core import delta2bbox
 from mmdet.ops import nms
-from mmdet.core import multiclass_nms
 from ..registry import HEADS
 from .anchor_head import AnchorHead
 
@@ -52,7 +51,7 @@ class RPNHead(AnchorHead):
             gt_bboxes_ignore=gt_bboxes_ignore)
         return dict(
             loss_rpn_cls=losses['loss_cls'], loss_rpn_bbox=losses['loss_bbox'])
-    
+
     def get_bboxes_single(self,
                           cls_scores,
                           bbox_preds,
@@ -66,7 +65,7 @@ class RPNHead(AnchorHead):
             rpn_cls_score = cls_scores[idx]
             rpn_bbox_pred = bbox_preds[idx]
             assert rpn_cls_score.size()[-2:] == rpn_bbox_pred.size()[-2:]
-            anchors = mlvl_anchors[idx]
+
             rpn_cls_score = rpn_cls_score.permute(1, 2, 0)
             if self.use_sigmoid_cls:
                 rpn_cls_score = rpn_cls_score.reshape(-1)
@@ -75,6 +74,8 @@ class RPNHead(AnchorHead):
                 rpn_cls_score = rpn_cls_score.reshape(-1, 2)
                 scores = rpn_cls_score.softmax(dim=1)[:, 1]
             rpn_bbox_pred = rpn_bbox_pred.permute(1, 2, 0).reshape(-1, 4)
+
+            anchors = mlvl_anchors[idx]
             if cfg.nms_pre > 0 and scores.shape[0] > cfg.nms_pre:
                 _, topk_inds = scores.topk(cfg.nms_pre)
                 rpn_bbox_pred = rpn_bbox_pred[topk_inds, :]
@@ -89,7 +90,6 @@ class RPNHead(AnchorHead):
                                            (h >= cfg.min_bbox_size)).squeeze()
                 proposals = proposals[valid_inds, :]
                 scores = scores[valid_inds]
-
             proposals = torch.cat([proposals, scores.unsqueeze(-1)], dim=-1)
             proposals, _ = nms(proposals, cfg.nms_thr)
             proposals = proposals[:cfg.nms_post, :]

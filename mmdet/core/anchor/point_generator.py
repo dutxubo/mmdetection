@@ -4,12 +4,8 @@ import torch
 class PointGenerator(object):
 
     def _meshgrid(self, x, y, row_major=True):
-        #xx = x.repeat(len(y))
-        #yy = y.view(-1, 1).repeat(1, len(x)).view(-1)
-        # jit support Tensor.size
-        xx = x.repeat(y.size(0))
-        yy = y.view(-1, 1).repeat(1, x.size(0)).view(-1)
-        
+        xx = x.repeat(len(y))
+        yy = y.view(-1, 1).repeat(1, len(x)).view(-1)
         if row_major:
             return xx, yy
         else:

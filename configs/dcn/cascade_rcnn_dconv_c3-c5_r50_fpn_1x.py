@@ -158,8 +158,12 @@ test_cfg = dict(
         nms_thr=0.7,
         min_bbox_size=0),
     rcnn=dict(
+<<<<<<< HEAD
         score_thr=0.05, nms=dict(type='nms', iou_thr=0.5), max_per_img=100),
     keep_all_stages=False)
+=======
+        score_thr=0.05, nms=dict(type='nms', iou_thr=0.5), max_per_img=100))
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 # dataset settings
 dataset_type = 'CocoDataset'
 data_root = 'data/coco/'

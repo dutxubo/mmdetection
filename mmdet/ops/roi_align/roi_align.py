@@ -2,8 +2,8 @@ import torch.nn as nn
 from torch.autograd import Function
 from torch.autograd.function import once_differentiable
 from torch.nn.modules.utils import _pair
-import torch
 
+import torch
 from . import roi_align_cuda
 
 
@@ -59,6 +59,7 @@ roi_align = RoIAlignFunction.apply
 
 
 
+
 def roi_align_jit(features, rois, out_size, spatial_scale, sample_num):
     out_h, out_w = _pair(out_size)
             
@@ -73,7 +74,6 @@ from .. import ops_mode
 if ops_mode.mode == 'jit':
     roi_align = roi_align_jit
 
-
 class RoIAlign(nn.Module):
 
     def __init__(self,
@@ -87,8 +87,7 @@ class RoIAlign(nn.Module):
         self.spatial_scale = float(spatial_scale)
         self.sample_num = int(sample_num)
         self.use_torchvision = use_torchvision
-    
-    # for train
+
     def forward(self, features, rois):
         if self.use_torchvision:
             from torchvision.ops import roi_align as tv_roi_align

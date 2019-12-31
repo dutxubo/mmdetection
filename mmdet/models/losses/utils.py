@@ -36,8 +36,7 @@ def weight_reduce_loss(loss, weight=None, reduction='mean', avg_factor=None):
         Tensor: Processed loss values.
     """
     # if weight is specified, apply element-wise weight
-    #import pdb
-    #pdb.set_trace() 
+
     # https://github.com/open-mmlab/mmdetection/issues/1436
     if weight is not None:
         #loss = loss * weight
@@ -72,6 +71,7 @@ def weighted_loss(loss_func):
 
     :Example:
 
+    >>> import torch
     >>> @weighted_loss
     >>> def l1_loss(pred, target):
     >>>     return (pred - target).abs()

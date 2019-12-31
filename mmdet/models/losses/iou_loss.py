@@ -133,5 +133,3 @@ class BoundedIoULoss(nn.Module):
             avg_factor=avg_factor,
             **kwargs)
         return loss
-
-    

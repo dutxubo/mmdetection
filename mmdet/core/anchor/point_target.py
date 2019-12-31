@@ -43,7 +43,7 @@ def point_target(proposals_list,
         gt_bboxes_ignore_list = [None for _ in range(num_imgs)]
     if gt_labels_list is None:
         gt_labels_list = [None for _ in range(num_imgs)]
-    ### all_bbox_gt [(n,4)]
+
     (all_labels, all_label_weights, all_bbox_gt, all_proposals,
      all_proposal_weights, pos_inds_list, neg_inds_list) = multi_apply(
          point_target_single,
@@ -123,6 +123,7 @@ def point_target_single(flat_proposals,
 
     pos_inds = sampling_result.pos_inds
     neg_inds = sampling_result.neg_inds
+
     #pos_inds的顺序与pos_gt_bboxes的顺序是对应的
     if len(pos_inds) > 0:
         pos_gt_bboxes = sampling_result.pos_gt_bboxes

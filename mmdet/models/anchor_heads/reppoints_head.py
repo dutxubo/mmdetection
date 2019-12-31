@@ -8,7 +8,6 @@ from mmcv.cnn import normal_init
 from mmdet.core import (PointGenerator, multi_apply, multiclass_nms,
                         point_target)
 from mmdet.ops import DeformConv
-#from mmdet.ops import DeformConv2D
 
 from ..builder import build_loss
 from ..registry import HEADS
@@ -133,7 +132,6 @@ class RepPointsHead(nn.Module):
                     conv_cfg=self.conv_cfg,
                     norm_cfg=self.norm_cfg))
         pts_out_dim = 4 if self.use_grid_points else 2 * self.num_points
-        
         self.reppoints_cls_conv = DeformConv(self.feat_channels,
                                              self.point_feat_channels,
                                              self.dcn_kernel, 1, self.dcn_pad)
@@ -143,7 +141,8 @@ class RepPointsHead(nn.Module):
                                                  self.point_feat_channels, 3,
                                                  1, 1)
         self.reppoints_pts_init_out = nn.Conv2d(self.point_feat_channels,
-                                                pts_out_dim, 1, 1, 0)     
+                                                pts_out_dim, 1, 1, 0)
+
         self.reppoints_pts_refine_conv = DeformConv(self.feat_channels,
                                                     self.point_feat_channels,
                                                     self.dcn_kernel, 1,
@@ -275,7 +274,7 @@ class RepPointsHead(nn.Module):
                 pts_out_init, bbox_init.detach())
         else:
             pts_out_init = pts_out_init + points_init
-        # refine and classify reppoints   ???
+        # refine and classify reppoints
         pts_out_init_grad_mul = (1 - self.gradient_mul) * pts_out_init.detach(
         ) + self.gradient_mul * pts_out_init
         dcn_offset = pts_out_init_grad_mul - dcn_base_offset
@@ -365,7 +364,7 @@ class RepPointsHead(nn.Module):
                 x_pts_shift = yx_pts_shift[..., 1::2]
                 xy_pts_shift = torch.stack([x_pts_shift, y_pts_shift], -1)
                 xy_pts_shift = xy_pts_shift.view(*yx_pts_shift.shape[:-1], -1)
-                pts = xy_pts_shift * self.point_strides[i_lvl] + pts_center 
+                pts = xy_pts_shift * self.point_strides[i_lvl] + pts_center
                 pts_lvl.append(pts)
             pts_lvl = torch.stack(pts_lvl, 0)
             pts_list.append(pts_lvl)
@@ -425,7 +424,7 @@ class RepPointsHead(nn.Module):
         center_list, valid_flag_list = self.get_points(featmap_sizes,
                                                        img_metas)
         pts_coordinate_preds_init = self.offset_to_pts(center_list,
-                                                       pts_preds_init)  
+                                                       pts_preds_init)
         if cfg.init.assigner['type'] == 'PointAssigner':
             # Assign target for center list
             candidate_list = center_list
@@ -587,7 +586,7 @@ class RepPointsHead(nn.Module):
         if rescale:
             mlvl_bboxes /= mlvl_bboxes.new_tensor(scale_factor)  # origin code
             #mlvl_bboxes /= scale_factor.type_as(mlvl_bboxes) # 用于jit.trace
-         
+        
         mlvl_scores = torch.cat(mlvl_scores)
         if self.use_sigmoid_cls:
             padding = mlvl_scores.new_zeros(mlvl_scores.shape[0], 1)

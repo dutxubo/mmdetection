@@ -1,5 +1,7 @@
 #include <torch/extension.h>
 
+#include <ATen/ATen.h>
+
 #include <cmath>
 #include <vector>
 
@@ -85,6 +87,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 }
 
 
+
 /////////////////////////////////// for jit ///////////////////////
 
 #include <torch/script.h>
@@ -118,3 +121,4 @@ at::Tensor roi_align_jit_forward_cuda(at::Tensor features, at::Tensor rois,
 }
 
 static auto registry = torch::jit::RegisterOperators("my_ops::roi_align_jit_forward_cuda", &roi_align_jit_forward_cuda);
+

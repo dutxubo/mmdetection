@@ -37,16 +37,18 @@ class CustomDataset(Dataset):
                  ann_file,
                  pipeline,
                  data_root=None,
-                 img_prefix=None,
+                 img_prefix='',
                  seg_prefix=None,
                  proposal_file=None,
-                 test_mode=False):
+                 test_mode=False,
+                 filter_empty_gt=True):
         self.ann_file = ann_file
         self.data_root = data_root
         self.img_prefix = img_prefix
         self.seg_prefix = seg_prefix
         self.proposal_file = proposal_file
         self.test_mode = test_mode
+        self.filter_empty_gt = filter_empty_gt
 
         # join paths if data_root is specified
         if self.data_root is not None:
@@ -60,14 +62,15 @@ class CustomDataset(Dataset):
                     or osp.isabs(self.proposal_file)):
                 self.proposal_file = osp.join(self.data_root,
                                               self.proposal_file)
-        #import pdb;pdb.set_trace()
+
         # load annotations (and proposals)
         self.img_infos = self.load_annotations(self.ann_file)
         if self.proposal_file is not None:
             self.proposals = self.load_proposals(self.proposal_file)
         else:
             self.proposals = None
-        # filter images with no annotation during training
+
+        # filter images too small
         if not test_mode:
             valid_inds = self._filter_imgs()
             self.img_infos = [self.img_infos[i] for i in valid_inds]
@@ -97,6 +100,7 @@ class CustomDataset(Dataset):
         results['proposal_file'] = self.proposal_file
         results['bbox_fields'] = []
         results['mask_fields'] = []
+        results['seg_fields'] = []
 
     def _filter_imgs(self, min_size=32):
         """Filter images too small."""
@@ -123,7 +127,6 @@ class CustomDataset(Dataset):
         return np.random.choice(pool)
 
     def __getitem__(self, idx):
-        
         if self.test_mode:
             return self.prepare_test_img(idx)
         while True:

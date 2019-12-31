@@ -123,3 +123,4 @@ at::Tensor masked_col2im_jit_forward_cuda( at::Tensor col,
 
 static auto registry =
     torch::jit::RegisterOperators("my_ops::masked_im2col_jit_forward_cuda", &masked_im2col_jit_forward_cuda).op("my_ops::masked_col2im_jit_forward_cuda", &masked_col2im_jit_forward_cuda);
+

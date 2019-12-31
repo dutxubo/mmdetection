@@ -10,15 +10,14 @@ from . import deform_conv_cuda
 
 
 
-
 class DeformConvFunction(Function):
-    
+
     @staticmethod
     def forward(ctx,
                 input,
                 offset,
                 weight,
-                stride=1 ,
+                stride=1,
                 padding=0,
                 dilation=1,
                 groups=1,
@@ -62,8 +61,7 @@ class DeformConvFunction(Function):
     def backward(ctx, grad_output):
         input, offset, weight = ctx.saved_tensors
 
-        #grad_input = grad_offset = grad_weight = None
-        grad_input, grad_offset, grad_weight = None, None, None
+        grad_input = grad_offset = grad_weight = None
 
         if not grad_output.is_cuda:
             raise NotImplementedError
@@ -106,17 +104,11 @@ class DeformConvFunction(Function):
             kernel = dilation[d] * (weight.size(d + 2) - 1) + 1
             stride_ = stride[d]
             output_size += ((in_size + (2 * pad) - kernel) // stride_ + 1, )
-            
+
         if not all(map(lambda s: s > 0, output_size)):
             raise ValueError(
                 "convolution input is too small (output would be {})".format(
                     'x'.join(map(str, output_size))))
-        #for s in output_size:
-        #    if s <= 0:
-        #        raise ValueError(
-        #        "convolution input is too small (output would be {})".format(
-        #            'x'.join(map(str, output_size))))
-                
         return output_size
 
 
@@ -198,6 +190,7 @@ modulated_deform_conv = ModulatedDeformConvFunction.apply
 
 
 
+
 def deform_conv_jit(x, offset, weight, stride, padding,
                            dilation, groups, deformable_groups):
     
@@ -222,8 +215,8 @@ if ops_mode.mode == 'jit':
     deform_conv = deform_conv_jit
 
 
+
 class DeformConv(nn.Module):
-    
     def __init__(self,
                  in_channels,
                  out_channels,
@@ -265,7 +258,7 @@ class DeformConv(nn.Module):
             n *= k
         stdv = 1. / math.sqrt(n)
         self.weight.data.uniform_(-stdv, stdv)
-    
+
 
     def forward(self, x, offset):
         return deform_conv(x, offset, self.weight, self.stride, self.padding,
@@ -312,6 +305,7 @@ class DeformConv(nn.Module):
         #            'x'.join(map(str, output_size))))
                 
         return output_size
+
 
 
 

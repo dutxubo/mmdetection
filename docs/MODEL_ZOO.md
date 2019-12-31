@@ -203,7 +203,11 @@ More models with different backbones will be added to the model zoo.
 
 **Notes:**
 
+<<<<<<< HEAD
 - Please refer to [Hybrid Task Cascade](../configs/htc/README.md) for details and more a powerful model (50.7/43.9).
+=======
+- Please refer to [Hybrid Task Cascade](https://github.com/open-mmlab/mmdetection/blob/master/configs/htc) for details and more a powerful model (50.7/43.9).
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 
 ### SSD
 
@@ -220,6 +224,7 @@ More models with different backbones will be added to the model zoo.
 
 ### Group Normalization (GN)
 
+<<<<<<< HEAD
 Please refer to [Group Normalization](../configs/gn/README.md) for details.
 
 ### Weight Standardization
@@ -268,6 +273,71 @@ Please refer to [Rethinking ImageNet Pre-training](../configs/scratch/README.md)
 ### Other datasets
 
 We also benchmark some methods on [PASCAL VOC](../configs/pascal_voc/README.md), [Cityscapes](../configs/cityscapes/README.md) and [WIDER FACE](../configs/wider_face/README.md).
+=======
+Please refer to [Group Normalization](https://github.com/open-mmlab/mmdetection/blob/master/configs/gn) for details.
+
+### Weight Standardization
+
+Please refer to [Weight Standardization](https://github.com/open-mmlab/mmdetection/blob/master/configs/gn+ws) for details.
+
+### Deformable Convolution v2
+
+Please refer to [Deformable Convolutional Networks](https://github.com/open-mmlab/mmdetection/blob/master/configs/dcn) for details.
+
+### Libra R-CNN
+
+Please refer to [Libra R-CNN](https://github.com/open-mmlab/mmdetection/blob/master/configs/libra_rcnn) for details.
+
+### Guided Anchoring
+
+Please refer to [Guided Anchoring](https://github.com/open-mmlab/mmdetection/blob/master/configs/guided_anchoring) for details.
+
+### FCOS
+
+Please refer to [FCOS](https://github.com/open-mmlab/mmdetection/blob/master/configs/fcos) for details.
+
+### FoveaBox
+
+Please refer to [FoveaBox](https://github.com/open-mmlab/mmdetection/blob/master/configs/foveabox) for details.
+
+### RepPoints
+
+Please refer to [RepPoints](https://github.com/open-mmlab/mmdetection/blob/master/configs/reppoints) for details.
+
+### FreeAnchor
+
+Please refer to [FreeAnchor](https://github.com/open-mmlab/mmdetection/blob/master/configs/free_anchor) for details.
+
+### Grid R-CNN (plus)
+
+Please refer to [Grid R-CNN](https://github.com/open-mmlab/mmdetection/blob/master/configs/grid_rcnn) for details.
+
+### GHM
+
+Please refer to [GHM](https://github.com/open-mmlab/mmdetection/blob/master/configs/ghm) for details.
+
+### GCNet
+
+Please refer to [GCNet](https://github.com/open-mmlab/mmdetection/blob/master/configs/gcnet) for details.
+
+### HRNet
+Please refer to [HRNet](https://github.com/open-mmlab/mmdetection/blob/master/configs/hrnet) for details.
+
+### Mask Scoring R-CNN
+
+Please refer to [Mask Scoring R-CNN](https://github.com/open-mmlab/mmdetection/blob/master/configs/ms_rcnn) for details.
+
+### Train from Scratch
+
+Please refer to [Rethinking ImageNet Pre-training](https://github.com/open-mmlab/mmdetection/blob/master/configs/scratch) for details.
+
+### NAS-FPN
+Please refer to [NAS-FPN](https://github.com/open-mmlab/mmdetection/blob/master/configs/nas_fpn) for details.
+
+### Other datasets
+
+We also benchmark some methods on [PASCAL VOC](https://github.com/open-mmlab/mmdetection/blob/master/configs/pascal_voc), [Cityscapes](https://github.com/open-mmlab/mmdetection/blob/master/configs/cityscapes) and [WIDER FACE](https://github.com/open-mmlab/mmdetection/blob/master/configs/wider_face).
+>>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 
 
 ## Comparison with Detectron and maskrcnn-benchmark
