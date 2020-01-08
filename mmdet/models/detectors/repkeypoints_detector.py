@@ -61,10 +61,10 @@ class RepKeyPointsDetector(RepPointsDetector):
         self.keypoint_results = keypoint_results[0]  
         return bbox_results[0]
     
-    def forward_jit(self, img, img_meta, rescale=True ):
+    def forward_jit(self, img, img_meta, rescale=True, nms=True ):
         x = self.extract_feat(img)
         outs = self.bbox_head(x)
         bbox_inputs = outs + (img_meta, self.test_cfg, rescale)
-        bbox_list = self.bbox_head.get_bboxes_keypoints(*bbox_inputs, nms=False)
+        bbox_list = self.bbox_head.get_bboxes_keypoints(*bbox_inputs, nms=nms)
         
         return bbox_list

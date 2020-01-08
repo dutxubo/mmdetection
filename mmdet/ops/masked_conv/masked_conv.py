@@ -60,12 +60,12 @@ class MaskedConv2dFunction(Function):
 
 masked_conv2d = MaskedConv2dFunction.apply
 
-
 def masked_conv2d_jit(features, mask, weight, bias, padding=0, stride=1):
     
     assert mask.dim() == 3 and mask.size(0) == 1
     assert features.dim() == 4 and features.size(0) == 1
     assert features.size()[2:] == mask.size()[1:]
+    # to amend
     pad_h, pad_w = _pair(padding)
     stride_h, stride_w = _pair(stride)
     if stride_h != 1 or stride_w != 1:

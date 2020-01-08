@@ -69,7 +69,7 @@ class SingleStageDetector(BaseDetector):
         losses = self.bbox_head.loss(
             *loss_inputs, gt_bboxes_ignore=gt_bboxes_ignore)
         return losses
-
+    #@profile
     def simple_test(self, img, img_meta, rescale=False):
 
         x = self.extract_feat(img)
@@ -84,3 +84,15 @@ class SingleStageDetector(BaseDetector):
 
     def aug_test(self, imgs, img_metas, rescale=False):
         raise NotImplementedError
+
+    def forward_jit(self, img, img_meta, rescale=True, nms=True):
+        """Used for computing network flops.
+
+        See `mmedetection/tools/get_flops.py`
+        """
+        x = self.extract_feat(img)
+        outs = self.bbox_head(x)
+        
+        bbox_inputs = outs + (img_meta, self.test_cfg, rescale)
+        bbox_list = self.bbox_head.get_bboxes(*bbox_inputs, nms=nms)
+        return bbox_list

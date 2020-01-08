@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
+import json
 
 def classwise_coco_eval(gtFile, resFile, annType, maxDets=[1, 10, 100], iouThrs=-1, scoreThrs=-1, classwise=False):
     '''
@@ -23,7 +24,7 @@ def classwise_coco_eval(gtFile, resFile, annType, maxDets=[1, 10, 100], iouThrs=
         cocoDt=cocoGt.loadRes(resFile)
     else:
         annos = json.load(open(resFile))
-        filter_anns = [anno for anno in annos if anno['score'] > score_thres]
+        filter_anns = [anno for anno in annos if anno['score'] > scoreThrs]
         cocoDt=cocoGt.loadRes(filter_anns)  #如果出现 unicode问题 直接在源码中删掉这个判断
     cocoEval = COCOeval(cocoGt,cocoDt,annType)
     

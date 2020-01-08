@@ -8,7 +8,7 @@ from mmdet.core import (auto_fp16, bbox_target, delta2bbox, force_fp32,
 from ..builder import build_loss
 from ..losses import accuracy
 from ..registry import HEADS
-
+import numpy as np
 
 @HEADS.register_module
 class BBoxHead(nn.Module):
@@ -159,6 +159,10 @@ class BBoxHead(nn.Module):
         if rescale:
             if isinstance(scale_factor, float):
                 bboxes /= scale_factor
+            elif isinstance(scale_factor, torch.Tensor):
+                scale_factor = scale_factor.to(bboxes.device)
+                bboxes = (bboxes.view(bboxes.size(0), -1, 4) /
+                          scale_factor).view(bboxes.size()[0], -1)
             else:
                 scale_factor = torch.from_numpy(scale_factor).to(bboxes.device)
                 bboxes = (bboxes.view(bboxes.size(0), -1, 4) /

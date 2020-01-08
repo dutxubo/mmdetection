@@ -104,10 +104,11 @@ at::Tensor roi_align_jit_forward_cuda(at::Tensor features, at::Tensor rois,
   int num_rois = rois.size(0);
   int size_rois = rois.size(1);
 
-  if (size_rois != 5) {
+  if (num_rois==0 or size_rois != 5) {
     printf("wrong roi size\n");
     return at::zeros({0}, output.options() );
   }
+    
 
   int num_channels = features.size(1);
   int data_height = features.size(2);

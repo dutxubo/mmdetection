@@ -67,7 +67,6 @@ def roi_align_jit(features, rois, out_size, spatial_scale, sample_num):
     batch_size, num_channels, data_height, data_width = features.size()
             
     output = torch.empty( (num_rois, num_channels, out_h, out_w) ).type_as(rois)
-            
     return torch.ops.my_ops.roi_align_jit_forward_cuda(features, rois, out_h, out_w, spatial_scale, sample_num, output)
 
 from .. import ops_mode

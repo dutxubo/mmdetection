@@ -118,10 +118,8 @@ class LoadAnnotations(object):
                 x4, y4 = pts[np.argmax(diff)]
                 
                 results['gt_keypoints'][i] = [x1, y1, x2, y2, x3, y3, x4, y4]
-                
-                #x1,y1,x2,y2 = results['gt_bboxes'][i]
-                #results['gt_keypoints'][i] = [x1,y1,x2,y1,x2,y2,x1,y2]
-        results['gt_keypoints'] = np.array(results['gt_keypoints']).astype(np.int)
+        gt_keypoints = np.array(results['gt_keypoints']).astype(np.int) 
+        results['gt_keypoints'] = gt_keypoints if gt_keypoints.any() else np.empty([0,8], dtype=np.int)
 
         ### coco 格式没有keypoint_fields关键字，自己建立一个
         results['keypoint_fields'] = []

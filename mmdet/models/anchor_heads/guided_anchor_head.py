@@ -202,6 +202,8 @@ class GuidedAnchorHead(AnchorHead):
         # masked conv is only used during inference for speed-up
         if not self.training:
             mask = loc_pred.sigmoid()[0] >= self.loc_filter_thr
+            # tmp xubo  jit.tracing时暂不使用mask_conv
+            # mask = None
         else:
             mask = None
         cls_score = self.conv_cls(x, mask)
@@ -512,7 +514,7 @@ class GuidedAnchorHead(AnchorHead):
             loss_bbox=losses_bbox,
             loss_shape=losses_shape,
             loss_loc=losses_loc)
-
+    
     @force_fp32(
         apply_to=('cls_scores', 'bbox_preds', 'shape_preds', 'loc_preds'))
     def get_bboxes(self,

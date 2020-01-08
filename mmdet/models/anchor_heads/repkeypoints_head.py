@@ -113,6 +113,8 @@ class RepKeyPointsHead(nn.Module):
         dcn_base_x = np.tile(dcn_base, self.dcn_kernel)
         dcn_base_offset = np.stack([dcn_base_y, dcn_base_x], axis=1).reshape(
             (-1))
+        # 提前将dcn_base_offset转为torch.cuda.FloatTensor类型，节省每次前传转变类型的时间
+        #self.dcn_base_offset = torch.tensor(dcn_base_offset).view(1, -1, 1, 1).cuda().float()
         self.dcn_base_offset = torch.tensor(dcn_base_offset).view(1, -1, 1, 1)
         self._init_layers()
 
@@ -284,7 +286,7 @@ class RepKeyPointsHead(nn.Module):
             grid_left, grid_top, grid_left + grid_width, grid_top + grid_height
         ], 1)
         return grid_yx, regressed_bbox
-
+    
     def forward_single(self, x):
         dcn_base_offset = self.dcn_base_offset.type_as(x)
         # If we use center_init, the initial reppoints is from center points.
@@ -718,7 +720,8 @@ class RepKeyPointsHead(nn.Module):
                                                scale_factor, cfg, rescale, nms)
             result_list.append(proposals)
         return result_list
-
+    
+    
     def get_bboxes_keypoints_single(self,
                           cls_scores,
                           bbox_preds,

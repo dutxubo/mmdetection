@@ -167,7 +167,6 @@ class Resize(object):
         results['keep_ratio'] = self.keep_ratio
 
     def _resize_bboxes(self, results):
-                
         img_shape = results['img_shape']
         for key in results.get('bbox_fields', []):
             bboxes = results[key]
@@ -480,10 +479,10 @@ class BboxSafeRandomCrop(object):
     def __call__(self, results):
         img = results['img']
         
-        if 'gt_bboxes' in results:
+        if 'gt_bboxes' in results and results['gt_bboxes'].any():
             gt_bboxes = results['gt_bboxes']
         else:
-            return result
+            return results
     
         min_x = int( gt_bboxes[:, 0].min() )
         min_y = int( gt_bboxes[:, 1].min() )

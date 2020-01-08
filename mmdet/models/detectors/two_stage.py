@@ -126,9 +126,44 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
             mask_pred = self.mask_head(mask_feats)
             outs = outs + (mask_pred, )
         return outs
-
     
-    def forward_jit(self, img, img_meta, proposals=None, rescale=False):
+    
+    def forward_rpn_jit(self, img):
+        # backbone
+        x = self.extract_feat(img)
+        
+        rpn_outs = self.rpn_head(x)
+        
+        return x, rpn_outs
+    
+    def forward_head_jit(self, x, rois):
+        outs = ()
+        
+        #import pdb
+        #pdb.set_trace()
+        # bbox head
+        if self.with_bbox:
+            bbox_feats = self.bbox_roi_extractor(
+                x[:self.bbox_roi_extractor.num_inputs], rois)
+            if self.with_shared_head:
+                bbox_feats = self.shared_head(bbox_feats)
+            cls_score, bbox_pred = self.bbox_head(bbox_feats)
+            outs = outs + (cls_score, bbox_pred)
+        # mask head
+        if self.with_mask:
+            mask_rois = rois[:100]
+            mask_feats = self.mask_roi_extractor(
+                x[:self.mask_roi_extractor.num_inputs], mask_rois)
+            if self.with_shared_head:
+                mask_feats = self.shared_head(mask_feats)
+            mask_pred = self.mask_head(mask_feats)
+            outs = outs + (mask_pred, )
+       
+        return outs
+        
+        
+    
+    def forward_jit(self, img, img_meta, proposals=None, rescale=True):
         """Test without augmentation."""
         assert self.with_bbox, "Bbox head must be implemented."
 
@@ -143,7 +178,6 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
             proposal_inputs = rpn_outs + (img_meta, self.test_cfg.rpn)
             proposal_list = self.rpn_head.get_bboxes(*proposal_inputs)
             proposals = proposal_list[0]
-        #proposals = torch.randn(1000, 4).cuda()
         # bbox head
         rois = bbox2roi([proposals])
         if self.with_bbox:
@@ -153,15 +187,15 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
                 bbox_feats = self.shared_head(bbox_feats)
             cls_score, bbox_pred = self.bbox_head(bbox_feats)
             outs = outs + (cls_score, bbox_pred)
-        ## mask head
-        #if self.with_mask:
-        #    mask_rois = rois[:100]
-        #    mask_feats = self.mask_roi_extractor(
-        #        x[:self.mask_roi_extractor.num_inputs], mask_rois)
-        #    if self.with_shared_head:
-        #        mask_feats = self.shared_head(mask_feats)
-        #    mask_pred = self.mask_head(mask_feats)
-        #    outs = outs + (mask_pred, )
+        # mask head
+        if self.with_mask:
+            mask_rois = rois[:100]
+            mask_feats = self.mask_roi_extractor(
+                x[:self.mask_roi_extractor.num_inputs], mask_rois)
+            if self.with_shared_head:
+                mask_feats = self.shared_head(mask_feats)
+            mask_pred = self.mask_head(mask_feats)
+            outs = outs + (mask_pred, )
             
         img_shape = img_meta[0]['img_shape']
         scale_factor = img_meta[0]['scale_factor']
@@ -217,7 +251,7 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
         x = self.extract_feat(img)
 
         losses = dict()
-
+        
         # RPN forward and loss
         if self.with_rpn:
             rpn_outs = self.rpn_head(x)
@@ -347,16 +381,14 @@ class TwoStageDetector(BaseDetector, RPNTestMixin, BBoxTestMixin,
     def simple_test(self, img, img_meta, proposals=None, rescale=False):
         """Test without augmentation."""
         assert self.with_bbox, "Bbox head must be implemented."
-
         x = self.extract_feat(img)
-
 
         if proposals is None:
             proposal_list = self.simple_test_rpn(x, img_meta,
                                                  self.test_cfg.rpn)
         else:
             proposal_list = proposals
-
+        
         det_bboxes, det_labels = self.simple_test_bboxes(
             x, img_meta, proposal_list, self.test_cfg.rcnn, rescale=rescale)
         bbox_results = bbox2result(det_bboxes, det_labels,
