@@ -1,6 +1,7 @@
 from .compose import Compose
 from .formating import (Collect, ImageToTensor, ToDataContainer, ToTensor,
                         Transpose, to_tensor)
+from .instaboost import InstaBoost
 from .loading import LoadAnnotations, LoadImageFromFile, LoadProposals
 from .test_aug import MultiScaleFlipAug
 
@@ -17,9 +18,11 @@ __all__ = [
     'Transpose', 'Collect', 'LoadAnnotations', 'LoadImageFromFile',
     'LoadProposals', 'MultiScaleFlipAug', 'Resize', 'RandomFlip', 'Pad',
     'RandomCrop', 'Normalize', 'SegRescale', 'MinIoURandomCrop', 'BboxSafeRandomCrop', 
-    'Expand', 'PhotoMetricDistortion','Albu',
+    'Expand', 'PhotoMetricDistortion','Albu','InstaBoost',
+    
     'AlbuAugmentation', 'RandAugment',
     'Erasure', 'RandomCropBk', 'MyPreProcess', 'Paste', 'PasteNonDetect', 'GetImageLevelLabel', 'RandomCropCNYZ'
     
+
 
 ]

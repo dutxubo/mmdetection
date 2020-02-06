@@ -1,14 +1,23 @@
 import inspect
 
-import albumentations
 import mmcv
 import numpy as np
-from albumentations import Compose
-from imagecorruptions import corrupt
 from numpy import random
 
 from mmdet.core.evaluation.bbox_overlaps import bbox_overlaps
 from ..registry import PIPELINES
+
+try:
+    from imagecorruptions import corrupt
+except ImportError:
+    corrupt = None
+
+try:
+    import albumentations
+    from albumentations import Compose
+except ImportError:
+    albumentations = None
+    Compose = None
 
 
 
@@ -291,10 +300,10 @@ class RandomFlip(object):
                                               results['flip_direction'])
             # flip masks
             for key in results.get('mask_fields', []):
-                results[key] = [
+                results[key] = np.stack([
                     mmcv.imflip(mask, direction=results['flip_direction'])
                     for mask in results[key]
-                ]
+                ])
 
             # flip segs
             for key in results.get('seg_fields', []):
@@ -419,7 +428,7 @@ class RandomCrop(object):
         crop_x1, crop_x2 = offset_w, offset_w + self.crop_size[1]
 
         # crop the image
-        img = img[crop_y1:crop_y2, crop_x1:crop_x2, :]
+        img = img[crop_y1:crop_y2, crop_x1:crop_x2, ...]
         img_shape = img.shape
         results['img'] = img
         results['img_shape'] = img_shape
@@ -456,7 +465,7 @@ class RandomCrop(object):
                     gt_mask = results['gt_masks'][i][crop_y1:crop_y2,
                                                      crop_x1:crop_x2]
                     valid_gt_masks.append(gt_mask)
-                results['gt_masks'] = valid_gt_masks
+                results['gt_masks'] = np.stack(valid_gt_masks)
 
         return results
 
@@ -697,7 +706,7 @@ class Expand(object):
                                       0).astype(mask.dtype)
                 expand_mask[top:top + h, left:left + w] = mask
                 expand_gt_masks.append(expand_mask)
-            results['gt_masks'] = expand_gt_masks
+            results['gt_masks'] = np.stack(expand_gt_masks)
 
         # not tested
         if 'gt_semantic_seg' in results:
@@ -789,10 +798,11 @@ class MinIoURandomCrop(object):
                         results['gt_masks'][i] for i in range(len(mask))
                         if mask[i]
                     ]
-                    results['gt_masks'] = [
+                    results['gt_masks'] = np.stack([
                         gt_mask[patch[1]:patch[3], patch[0]:patch[2]]
                         for gt_mask in valid_masks
                     ]
+                        
                 # not tested
                 if 'gt_semantic_seg' in results:
                     results['gt_semantic_seg'] = results['gt_semantic_seg'][
@@ -814,6 +824,8 @@ class Corrupt(object):
         self.severity = severity
 
     def __call__(self, results):
+        if corrupt is None:
+            raise RuntimeError('imagecorruptions is not installed')
         results['img'] = corrupt(
             results['img'].astype(np.uint8),
             corruption_name=self.corruption,
@@ -846,6 +858,8 @@ class Albu(object):
         skip_img_without_anno (bool): whether to skip the image
                                       if no ann left after aug
         """
+        if Compose is None:
+            raise RuntimeError('albumentations is not installed')
 
         self.transforms = transforms
         self.filter_lost_elements = False
@@ -889,6 +903,8 @@ class Albu(object):
 
         obj_type = args.pop("type")
         if mmcv.is_str(obj_type):
+            if albumentations is None:
+                raise RuntimeError('albumentations is not installed')
             obj_cls = getattr(albumentations, obj_type)
         elif inspect.isclass(obj_type):
             obj_cls = obj_type
@@ -941,6 +957,7 @@ class Albu(object):
             if isinstance(results['bboxes'], list):
                 results['bboxes'] = np.array(
                     results['bboxes'], dtype=np.float32)
+            results['bboxes'] = results['bboxes'].reshape(-1, 4)
 
             # filter label_fields
             if self.filter_lost_elements:
@@ -951,9 +968,8 @@ class Albu(object):
                     results[label] = np.array(
                         [results[label][i] for i in results['idx_mapper']])
                 if 'masks' in results:
-                    results['masks'] = [
-                        results['masks'][i] for i in results['idx_mapper']
-                    ]
+                    results['masks'] = np.array(
+                        [results['masks'][i] for i in results['idx_mapper']])
 
                 if (not len(results['idx_mapper'])
                         and self.skip_img_without_anno):
@@ -962,6 +978,7 @@ class Albu(object):
         if 'gt_labels' in results:
             if isinstance(results['gt_labels'], list):
                 results['gt_labels'] = np.array(results['gt_labels'])
+            results['gt_labels'] = results['gt_labels'].astype(np.int64)
 
         # back to the original format
         results = self.mapper(results, self.keymap_back)
