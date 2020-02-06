@@ -148,10 +148,6 @@ log_config = dict(
 # yapf:enable
 # runtime settings
 total_epochs = 12
-<<<<<<< HEAD
-device_ids = range(8)
-=======
->>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/ga_retinanet_r50_caffe_fpn_1x'

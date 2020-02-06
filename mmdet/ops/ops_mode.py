@@ -1,2 +1,2 @@
 
-mode = 'train' # 'train' or 'jit'
+mode = 'jit' # 'train' or 'jit'

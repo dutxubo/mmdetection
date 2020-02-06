@@ -127,7 +127,7 @@ def main():
 
     parser.add_argument('--checkpoint_file', type=str, default='/home/songbai.xb/detection/mmdetection/myprojects/extinguisher/work_dirs/all/ga_faster_rcnn_r50_caffe_mykeep_ratio_RandAugment/latest.pth', help='model weight')
 
-    parser.add_argument('--export_file', type=str, default='/home/songbai.xb/detection/mmdetection_merge/mmdetection/myprojects/extinguisher/ga_faster_rcnn_r50.pt', help='the file to save export model')
+    parser.add_argument('--export_file', type=str, default='/home/songbai.xb/detection/mmdetection_merge/mmdetection/myprojects/extinguisher/torchscript_export/ga_faster_rcnn_r50.pt', help='the file to save export model')
     
 
     parser.add_argument('--work_size', type=int, nargs=2, metavar=('height', 'width'), help='model input size')

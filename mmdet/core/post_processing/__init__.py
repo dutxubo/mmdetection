@@ -1,5 +1,6 @@
 
 from .bbox_nms import multiclass_nms, multiclasskeypoint_nms
+from .bbox_nms import nms_crossclass
 
 from .merge_augs import (merge_aug_bboxes, merge_aug_masks,
                          merge_aug_proposals, merge_aug_scores)
@@ -7,6 +8,7 @@ from .merge_augs import (merge_aug_bboxes, merge_aug_masks,
 __all__ = [
     'multiclass_nms', 'merge_aug_proposals', 'merge_aug_bboxes',
     'merge_aug_scores', 'merge_aug_masks',
-    'multiclasskeypoint_nms'
+    'multiclasskeypoint_nms',
+    'nms_crossclass',
 
 ]

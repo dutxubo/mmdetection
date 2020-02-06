@@ -29,9 +29,10 @@ class MergingCell(nn.Module):
         elif x.shape[-2:] < size:
             return F.interpolate(x, size=size, mode='nearest')
         else:
-            assert x.shape[-2] % size[-2] == 0 and x.shape[-1] % size[-1] == 0
-            kernel_size = x.shape[-1] // size[-1]
-            x = F.max_pool2d(x, kernel_size=kernel_size, stride=kernel_size)
+            #assert x.shape[-2] % size[-2] == 0 and x.shape[-1] % size[-1] == 0
+            #kernel_size = x.shape[-1] // size[-1]x
+            #x = F.max_pool2d(x, kernel_size=kernel_size, stride=kernel_size)
+            x = F.adaptive_max_pool2d(x, output_size=size)
             return x
 
     def forward(self, x1, x2, out_size):

@@ -115,6 +115,7 @@ async def async_inference_detector(model, img):
     return result
 
 
+
 # TODO: merge this method with the one in BaseDetector
 def show_result(img,
                 result,
@@ -122,6 +123,7 @@ def show_result(img,
                 score_thr=0.3,
                 wait_time=0,
                 show=True,
+                thickness=10,
                 out_file=None):
     """Visualize the detection results on the image.
 
@@ -148,32 +150,27 @@ def show_result(img,
     else:
         bbox_result, segm_result = result, None
     bboxes = np.vstack(bbox_result)
+    # draw segmentation masks
+    if segm_result is not None:
+        segms = mmcv.concat_list(segm_result)
+        inds = np.where(bboxes[:, -1] > score_thr)[0]
+        for i in inds:
+            color_mask = np.random.randint(0, 256, (1, 3), dtype=np.uint8)
+            mask = maskUtils.decode(segms[i]).astype(np.bool)
+            img[mask] = img[mask] * 0.5 + color_mask * 0.5
+    # draw bounding boxes
     labels = [
         np.full(bbox.shape[0], i, dtype=np.int32)
         for i, bbox in enumerate(bbox_result)
     ]
     labels = np.concatenate(labels)
-    # draw segmentation masks
-    if segm_result is not None:
-        segms = mmcv.concat_list(segm_result)
-        inds = np.where(bboxes[:, -1] > score_thr)[0]
-        np.random.seed(42)
-        color_masks = [
-            np.random.randint(0, 256, (1, 3), dtype=np.uint8)
-            for _ in range(max(labels) + 1)
-        ]
-        for i in inds:
-            i = int(i)
-            color_mask = color_masks[labels[i]]
-            mask = maskUtils.decode(segms[i]).astype(np.bool)
-            img[mask] = img[mask] * 0.5 + color_mask * 0.5
-    # draw bounding boxes
     mmcv.imshow_det_bboxes(
         img,
         bboxes,
         labels,
         class_names=class_names,
         score_thr=score_thr,
+        thickness=thickness,
         show=show,
         wait_time=wait_time,
         out_file=out_file)
@@ -185,7 +182,8 @@ def show_result_pyplot(img,
                        result,
                        class_names,
                        score_thr=0.3,
-                       fig_size=(15, 10)):
+                       fig_size=(15, 10),
+                       thickness=10):
     """Visualize the detection results on the image.
 
     Args:
@@ -199,6 +197,6 @@ def show_result_pyplot(img,
             be written to the out file instead of shown in a window.
     """
     img = show_result(
-        img, result, class_names, score_thr=score_thr, show=False)
+        img, result, class_names, score_thr=score_thr, show=False, thickness=thickness)
     plt.figure(figsize=fig_size)
     plt.imshow(mmcv.bgr2rgb(img))

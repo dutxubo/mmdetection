@@ -137,3 +137,32 @@ def multiclasskeypoint_nms(multi_bboxes,
         labels = multi_bboxes.new_zeros((0, ), dtype=torch.long)
 
     return bboxes, keypoints, labels
+
+
+from mmdet.ops import nms
+import numpy as np
+def nms_crossclass(bbox_results:list, iou_thr=0.5 ) -> (list, list): 
+    class_num = len(bbox_results)
+    
+    labels = []
+    indexs = []
+    for i, bboxes in enumerate(bbox_results):
+        label = i
+        index = 0
+        for bbox in bboxes:
+            labels.append(label)
+            indexs.append(index)
+            index += 1
+            
+    labels = np.array(labels)
+    indexs = np.array(indexs)
+    bbox_all = np.concatenate(bbox_results)
+    
+    bbox_all, inds = nms(bbox_all, iou_thr)
+    
+    labels = labels[inds]
+    indexs = indexs[inds]
+    new_bbox_results = [bbox_all[labels==i] for i in range(class_num)]
+    new_indexs = [indexs[labels==i] for i in range(class_num)]
+
+    return new_bbox_results, new_indexs

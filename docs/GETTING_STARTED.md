@@ -109,9 +109,6 @@ for frame in video:
     show_result(frame, result, model.CLASSES, wait_time=1)
 ```
 
-<<<<<<< HEAD
-A notebook demo can be found in [demo/inference_demo.ipynb](../demo/inference_demo.ipynb).
-=======
 A notebook demo can be found in [demo/inference_demo.ipynb](https://github.com/open-mmlab/mmdetection/blob/master/demo/inference_demo.ipynb).
 
 #### Asynchronous interface - supported for Python 3.7+
@@ -155,8 +152,6 @@ async def main():
 asyncio.run(main())
 
 ```
->>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
-
 
 ## Train a model
 
@@ -185,11 +180,7 @@ If you want to specify the working directory in the command, you can add an argu
 
 Optional arguments are:
 
-<<<<<<< HEAD
-- `--validate` (**strongly recommended**): Perform evaluation at every k (default value is 1, which can be modified like [this](../configs/mask_rcnn_r50_fpn_1x.py#L174)) epochs during the training.
-=======
 - `--validate` (**strongly recommended**): Perform evaluation at every k (default value is 1, which can be modified like [this](https://github.com/open-mmlab/mmdetection/blob/master/configs/mask_rcnn_r50_fpn_1x.py#L174)) epochs during the training.
->>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 - `--work_dir ${WORK_DIR}`: Override the working directory specified in the config file.
 - `--resume_from ${CHECKPOINT_FILE}`: Resume from a previous checkpoint file.
 
@@ -211,11 +202,7 @@ Here is an example of using 16 GPUs to train Mask R-CNN on the dev partition.
 ./tools/slurm_train.sh dev mask_r50_1x configs/mask_rcnn_r50_fpn_1x.py /nfs/xxxx/mask_rcnn_r50_fpn_1x 16
 ```
 
-<<<<<<< HEAD
-You can check [slurm_train.sh](../tools/slurm_train.sh) for full arguments and environment variables.
-=======
 You can check [slurm_train.sh](https://github.com/open-mmlab/mmdetection/blob/master/tools/slurm_train.sh) for full arguments and environment variables.
->>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 
 If you have just multiple machines connected with ethernet, you can refer to
 pytorch [launch utility](https://pytorch.org/docs/stable/distributed_deprecated.html#launch-utility).
@@ -271,8 +258,7 @@ average iter time: 1.1959 s/iter
 
 ```
 
-<<<<<<< HEAD
-=======
+
 ### Analyse class-wise performance
 
 You can analyse the class-wise mAP to have a more comprehensive understanding of the model.
@@ -283,7 +269,6 @@ python coco_eval.py ${RESULT} --ann ${ANNOTATION_PATH} --types bbox --classwise
 
 Now we only support class-wise mAP for all the evaluation types, we will support class-wise mAR in the future.
 
->>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 ### Get the FLOPs and params (experimental)
 
 We provide a script adapted from [flops-counter.pytorch](https://github.com/sovrasov/flops-counter.pytorch) to compute the FLOPs and params of a given model.
@@ -306,11 +291,8 @@ Params: 37.74 M
 
 (1) FLOPs are related to the input shape while parameters are not. The default input shape is (1, 3, 1280, 800).
 (2) Some operators are not counted into FLOPs like GN and custom operators.
-<<<<<<< HEAD
-You can add support for new operators by modifying [`mmdet/utils/flops_counter.py`](mmdet/utils/flops_counter.py).
-=======
+
 You can add support for new operators by modifying [`mmdet/utils/flops_counter.py`](https://github.com/open-mmlab/mmdetection/blob/master/mmdet/utils/flops_counter.py).
->>>>>>> 4472c661b63671fd35b567f4fe118006cf224ab8
 (3) The FLOPs of two-stage detectors is dependent on the number of proposals.
 
 ### Publish a model

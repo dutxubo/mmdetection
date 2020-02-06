@@ -203,7 +203,7 @@ class GuidedAnchorHead(AnchorHead):
         if not self.training:
             mask = loc_pred.sigmoid()[0] >= self.loc_filter_thr
             # tmp xubo  jit.tracing时暂不使用mask_conv
-            # mask = None
+            #mask = None
         else:
             mask = None
         cls_score = self.conv_cls(x, mask)
