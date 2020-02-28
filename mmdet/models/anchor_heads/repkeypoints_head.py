@@ -785,7 +785,7 @@ class RepKeyPointsHead(nn.Module):
             else:
                 mlvl_keypoints /= mlvl_keypoints.new_tensor(scale_factor)
               
-            ### 用于jit.trace
+            # 用于jit.trace
             #mlvl_bboxes /= scale_factor.type_as(mlvl_bboxes)  # 用于jit.trace
             #if len(scale_factor.size()) == 0:
             #    mlvl_keypoints /= scale_factor.type_as(mlvl_keypoints)

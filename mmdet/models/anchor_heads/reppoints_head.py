@@ -106,7 +106,7 @@ class RepPointsHead(nn.Module):
             (-1))
         # 提前将dcn_base_offset转为torch.cuda.FloatTensor类型，节省每次前传转变类型的时间    jit.trace时会出问题
         #self.dcn_base_offset = torch.tensor(dcn_base_offset).view(1, -1, 1, 1).cuda().float()
-        self.dcn_base_offset = torch.tensor(dcn_base_offset).view(1, -1, 1, 1)
+        self.dcn_base_offset = torch.tensor(dcn_base_offset).view(1, -1, 1, 1).float()
         self._init_layers()
 
     def _init_layers(self):

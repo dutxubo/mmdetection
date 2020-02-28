@@ -749,6 +749,9 @@ class MinIoURandomCrop(object):
         img, boxes, labels = [
             results[k] for k in ('img', 'gt_bboxes', 'gt_labels')
         ]
+        # xubo: support imgs that do not contain gt boxes
+        if len(boxes) == 0:
+            return results
         h, w, c = img.shape
         while True:
             mode = random.choice(self.sample_mode)
@@ -801,7 +804,7 @@ class MinIoURandomCrop(object):
                     results['gt_masks'] = np.stack([
                         gt_mask[patch[1]:patch[3], patch[0]:patch[2]]
                         for gt_mask in valid_masks
-                    ]
+                    ])
                         
                 # not tested
                 if 'gt_semantic_seg' in results:

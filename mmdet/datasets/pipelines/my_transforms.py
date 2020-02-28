@@ -333,18 +333,18 @@ class RandomCropBk(object):
             
         bk_indexs =  np.where(labels == self.bk_label)[0]
         standard_indexs =  np.where(labels == self.standard_label)[0]
-        #fg_cnyzs =  np.where(labels == 4)[0]
-        #logo_cainiaos =  np.where(labels == 5)[0]
+        fg_cnyzs =  np.where(labels == 2)[0]
+        logo_cainiaos =  np.where(labels == 3)[0]
         
         #当图片中只有一个standard doortitle时，才对该门头的白框进行随机裁剪
-        if len(bk_indexs) != 1 or len(standard_indexs)!=1 : #or len(fg_cnyzs)!=1 or len(logo_cainiaos)!=1:
+        if len(bk_indexs) != 1 or len(standard_indexs)!=1 or len(fg_cnyzs)!=1 or len(logo_cainiaos)!=1:
             return results
         
         bk_index = bk_indexs[0]
         # 理论上需要判断bk框在standard内部
         standard_index =  standard_indexs[0]
-        #fg_cnyz =  fg_cnyzs[0]
-        #logo_cainiao =  logo_cainiaos[0]
+        fg_cnyz =  fg_cnyzs[0]
+        logo_cainiao =  logo_cainiaos[0]
         
         
         bk_bbox = boxes[bk_index,:].reshape(-1).astype(np.int32)
@@ -356,15 +356,15 @@ class RandomCropBk(object):
         
 
         max_crop_w = bk_w * self.crop_ratio 
-        min_crop_w = bk_w * self.crop_ratio / 6
+        min_crop_w = bk_w * self.crop_ratio / 500
         crop_x = random.randint( int(bk_bbox[0] + min_crop_w) , int(bk_bbox[0] + max_crop_w) )
         crop_rect = [crop_x, 0 , img_w, img_h]
         
         ## 如果裁剪超出了 fg_cnyz 和 logo_cainiao 区域，则改变对应的标签
-        #if crop_x > boxes[fg_cnyz][0] :
-        #    labels[fg_cnyz] = 0
-        #if crop_x > boxes[logo_cainiao][0] :
-        #    labels[logo_cainiao] = 0
+        if crop_x > boxes[fg_cnyz][0] :
+            labels[fg_cnyz] = 4
+        if crop_x > boxes[logo_cainiao][0] :
+            labels[logo_cainiao] = 4
             
         
         #将对应的standard标签改为 non-standard

@@ -12,12 +12,13 @@ from .retina_sepbn_head import RetinaSepBNHead
 from .rpn_head import RPNHead
 from .ssd_head import SSDHead
 
+from .yolo_head import YoloHead
 from .repkeypoints_head import RepKeyPointsHead
 __all__ = [
     'AnchorHead', 'GuidedAnchorHead', 'FeatureAdaption', 'RPNHead',
     'GARPNHead', 'RetinaHead', 'RetinaSepBNHead', 'GARetinaHead', 'SSDHead',
     'FCOSHead', 'RepPointsHead', 'FoveaHead', 'FreeAnchorRetinaHead',
 
-    'RepKeyPointsHead', 'ATSSHead'
+    'RepKeyPointsHead', 'ATSSHead', 'YoloHead',
 
 ]

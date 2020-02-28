@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import xavier_init
@@ -113,7 +114,8 @@ class FPN(nn.Module):
         for i in range(used_backbone_levels - 1, 0, -1):
             #laterals[i - 1] += F.interpolate(
             #    laterals[i], scale_factor=2, mode='nearest')
-            _,_,H,W = laterals[i-1].size()
+            #_,_,H,W = laterals[i-1].shape
+            _,_,H,W = torch.tensor(laterals[i-1].shape) # for tensorrt
             laterals[i - 1] += F.interpolate(
                 laterals[i], size=(H,W), mode='nearest')
 

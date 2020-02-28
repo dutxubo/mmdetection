@@ -12,7 +12,13 @@ from . import deform_conv_cuda
 
 
 class DeformConvFunction(Function):
-
+    @staticmethod
+    def symbolic(g, input, offset, weight,stride=1,padding=0,dilation=1,
+                     groups=1,deformable_groups=1,im2col_step=64):
+        return g.op("DCNv1", input, offset, weight,
+                    stride_i = stride,padding_i = padding,dilation_i = dilation,
+                    groups_i = groups,deformable_group_i = deformable_groups,
+                   im2col_step_i = im2col_step)
     @staticmethod
     def forward(ctx,
                 input,
@@ -28,6 +34,7 @@ class DeformConvFunction(Function):
             raise ValueError(
                 'Expected 4D tensor as input, got {}D tensor instead.'.format(
                     input.dim()))
+        
         ctx.stride = _pair(stride)
         ctx.padding = _pair(padding)
         ctx.dilation = _pair(dilation)
@@ -40,9 +47,9 @@ class DeformConvFunction(Function):
         output = input.new_empty(
             DeformConvFunction._output_size(input, weight, ctx.padding,
                                             ctx.dilation, ctx.stride))
-
+        
         ctx.bufs_ = [input.new_empty(0), input.new_empty(0)]  # columns, ones
-
+        
         if not input.is_cuda:
             raise NotImplementedError
         else:
@@ -114,6 +121,12 @@ class DeformConvFunction(Function):
 
 
 class ModulatedDeformConvFunction(Function):
+    
+    @staticmethod
+    def symbolic(g, input, offset, mask, weight, bias,stride,padding,dilation,groups,deformable_groups):
+        return g.op("DCNv2", input, offset, mask, weight, bias,
+                    stride_i = stride,padding_i = padding,dilation_i = dilation,
+                    groups_i = groups,deformable_group_i = deformable_groups)
 
     @staticmethod
     def forward(ctx,
@@ -241,9 +254,9 @@ class DeformConv(nn.Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.kernel_size = _pair(kernel_size)
-        self.stride = _pair(stride)
-        self.padding = _pair(padding)
-        self.dilation = _pair(dilation)
+        self.stride = stride
+        self.padding = padding
+        self.dilation = dilation
         self.groups = groups
         self.deformable_groups = deformable_groups
         # enable compatibility with nn.Conv2d
@@ -268,30 +281,11 @@ class DeformConv(nn.Module):
         return deform_conv(x, offset, self.weight, self.stride, self.padding,
                            self.dilation, self.groups, self.deformable_groups)
     
-    # 只用于jit推理，不用于训练
-    def forward_jit(self, x, offset):
-        
-
-        output = torch.empty(
-            self._output_size(x, self.weight, self.padding, self.dilation, self.stride)).type_as(x)
-        
-        
-
-        bufs_ = [torch.empty(0).type_as(x), torch.empty(0).type_as(x)]  # columns, ones
-
-        if not x.is_cuda:
-            raise NotImplementedError
-        else:
-            output = torch.ops.my_ops.deform_conv_jit_forward_cuda(
-                x, self.weight, offset, output, bufs_[0], bufs_[1],
-                self.weight.size(3), self.weight.size(2), self.stride[1], self.stride[0],
-                self.padding[1], self.padding[0], self.dilation[1],
-                self.dilation[0], self.groups, self.deformable_groups)
-           
-        return output
-    
     @staticmethod
     def _output_size(x, weight, padding, dilation, stride):
+        stride = _pair(stride)
+        padding = _pair(padding)
+        dilation = _pair(dilation)
         
         channels = weight.size(0)
         output_size = (x.shape[0], channels)

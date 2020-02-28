@@ -121,11 +121,11 @@ def bbox_overlaps_ciou(bboxes1, bboxes2, eps=1e-6):
         S = 1 - iou
         alpha = v / (S + v)
         w_temp = 2 * w1
-        #distance = w1 ** 2 + h1 **2
+        distance = w1 ** 2 + h1 **2
         
     ar = (8 / (math.pi ** 2)) * arctan * ((w1 - w_temp) * h1)
-    cious = iou - (u + alpha * ar)
-    #cious = iou - (u + alpha * ar / distance)
+    #cious = iou - (u + alpha * ar)
+    cious = iou - (u + alpha * ar / distance)  #若w、h未归一化，需要对其进行归一化
     cious = torch.clamp(cious,min=-1.0,max = 1.0)
     if exchange:
         cious = cious.T
