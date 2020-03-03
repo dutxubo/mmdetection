@@ -339,7 +339,7 @@ class Pad(object):
 
     def _pad_img(self, results):
         if self.size is not None:
-            padded_img = mmcv.impad(results['img'], self.size)
+            padded_img = mmcv.impad(results['img'], self.size, self.pad_val)
         elif self.size_divisor is not None:
             padded_img = mmcv.impad_to_multiple(
                 results['img'], self.size_divisor, pad_val=self.pad_val)
@@ -901,10 +901,10 @@ class Albu(object):
         Returns:
             obj: The constructed object.
         """
-        assert isinstance(cfg, dict) and "type" in cfg
+        assert isinstance(cfg, dict) and 'type' in cfg
         args = cfg.copy()
 
-        obj_type = args.pop("type")
+        obj_type = args.pop('type')
         if mmcv.is_str(obj_type):
             if albumentations is None:
                 raise RuntimeError('albumentations is not installed')

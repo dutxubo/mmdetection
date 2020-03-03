@@ -143,6 +143,10 @@ class DeformRoIPoolingPack(DeformRoIPooling):
 
     def forward(self, data, rois):
         assert data.size(1) == self.out_channels
+        n = rois.shape[0]
+        if n == 0:
+            return data.new_empty(n, self.out_channels, self.out_size[0],
+                                  self.out_size[1])
         if self.no_trans:
             offset = data.new_empty(0)
             return deform_roi_pooling(data, rois, offset, self.spatial_scale,
@@ -151,7 +155,6 @@ class DeformRoIPoolingPack(DeformRoIPooling):
                                       self.part_size, self.sample_per_part,
                                       self.trans_std)
         else:
-            n = rois.shape[0]
             offset = data.new_empty(0)
             x = deform_roi_pooling(data, rois, offset, self.spatial_scale,
                                    self.out_size, self.out_channels, True,
@@ -223,6 +226,10 @@ class ModulatedDeformRoIPoolingPack(DeformRoIPooling):
 
     def forward(self, data, rois):
         assert data.size(1) == self.out_channels
+        n = rois.shape[0]
+        if n == 0:
+            return data.new_empty(n, self.out_channels, self.out_size[0],
+                                  self.out_size[1])
         if self.no_trans:
             offset = data.new_empty(0)
             return deform_roi_pooling(data, rois, offset, self.spatial_scale,
@@ -231,7 +238,6 @@ class ModulatedDeformRoIPoolingPack(DeformRoIPooling):
                                       self.part_size, self.sample_per_part,
                                       self.trans_std)
         else:
-            n = rois.shape[0]
             offset = data.new_empty(0)
             x = deform_roi_pooling(data, rois, offset, self.spatial_scale,
                                    self.out_size, self.out_channels, True,
