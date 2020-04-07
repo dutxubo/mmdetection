@@ -21,6 +21,7 @@ from .two_stage import TwoStageDetector
 from .repkeypoints_detector import RepKeyPointsDetector
 from .single_stage_and_classfier import SingleStageDetectorAndClassifier
 from .yolo import YoloNet
+from .centernet import CenterNet
 
 __all__ = [
     'ATSS', 'BaseDetector', 'SingleStageDetector', 'TwoStageDetector', 'RPN',
@@ -32,5 +33,6 @@ __all__ = [
     'RepKeyPointsDetector',
     'SingleStageDetectorAndClassifier',
     'YoloNet',
+    'CenterNet',
     
 ]

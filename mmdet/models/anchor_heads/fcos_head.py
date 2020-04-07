@@ -363,7 +363,7 @@ class FCOSHead(nn.Module):
             gt_bboxes[:, 3] - gt_bboxes[:, 1] + 1)
         # TODO: figure out why these two are different
         # areas = areas[None].expand(num_points, num_gts)
-        areas = areas[None].repeat(num_points, 1)
+        areas = areas[None].repeat(num_points, 1)  
         regress_ranges = regress_ranges[:, None, :].expand(
             num_points, num_gts, 2)
         gt_bboxes = gt_bboxes[None].expand(num_points, num_gts, 4)
@@ -375,10 +375,10 @@ class FCOSHead(nn.Module):
         right = gt_bboxes[..., 2] - xs
         top = ys - gt_bboxes[..., 1]
         bottom = gt_bboxes[..., 3] - ys
-        bbox_targets = torch.stack((left, top, right, bottom), -1)
+        bbox_targets = torch.stack((left, top, right, bottom), -1) # [num_points, num_gts, 4]
 
         # condition1: inside a gt bbox
-        inside_gt_bbox_mask = bbox_targets.min(-1)[0] > 0
+        inside_gt_bbox_mask = bbox_targets.min(-1)[0] > 0 # [num_points, num_gts]
 
         # condition2: limit the regression range for each location
         max_regress_distance = bbox_targets.max(-1)[0]
@@ -390,11 +390,11 @@ class FCOSHead(nn.Module):
         # we choose the one with minimal area
         areas[inside_gt_bbox_mask == 0] = INF
         areas[inside_regress_range == 0] = INF
-        min_area, min_area_inds = areas.min(dim=1)
+        min_area, min_area_inds = areas.min(dim=1) # [num_points]
 
-        labels = gt_labels[min_area_inds]
+        labels = gt_labels[min_area_inds]  # [num_points]
         labels[min_area == INF] = 0
-        bbox_targets = bbox_targets[range(num_points), min_area_inds]
+        bbox_targets = bbox_targets[range(num_points), min_area_inds] # [num_points, 4]
 
         return labels, bbox_targets
 

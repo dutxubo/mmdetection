@@ -118,14 +118,14 @@ class RandAugment(object):
         Contrast = A.RandomContrast(limit=0.5 * magnitude, p=1.0)
         #Solarize = albu.Solarize(threshold= int(256 * magnitude), p=1.0)
         
-        HorizontalFlip = A.HorizontalFlip(p=1.0)
+        #HorizontalFlip = A.HorizontalFlip(p=1.0)
         Translate = A.ShiftScaleRotate(shift_limit=0.45 * magnitude, scale_limit=0, rotate_limit=0, interpolation=1, border_mode=0, p=1.0)
         Scale= A.ShiftScaleRotate( shift_limit=0, scale_limit=0.5 * magnitude, rotate_limit=0, interpolation=1, border_mode=0, p=1.0)
         #Shear = albu.IAAAffine(shear=100, p=1.0)
         #Perspective = albu.IAAPerspective(scale=(0, 0.3), keep_size=True, p=1.0)
         Rotate = A.ShiftScaleRotate(shift_limit=0, scale_limit=0, rotate_limit=30 * magnitude, interpolation=1, border_mode=0, p=1.0)
         
-        self.augment_list = [Identity, Translate, Scale, Rotate, Brightness, Contrast, HorizontalFlip]
+        self.augment_list = [Identity, Translate, Scale, Rotate, Brightness, Contrast]
     
     def __call__(self, results):
         image = results['img']

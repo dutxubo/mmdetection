@@ -208,11 +208,15 @@ modulated_deform_conv = ModulatedDeformConvFunction.apply
 def deform_conv_jit(x, offset, weight, stride, padding,
                            dilation, groups, deformable_groups):
     
+    stride = _pair(stride)
+    padding = _pair(padding)
+    dilation = _pair(dilation)
+        
     output_size = DeformConv._output_size(x, weight, padding, dilation, stride )
     output = torch.empty(output_size ).type_as(x )
     
     bufs_ = [torch.empty(0).type_as(x), torch.empty(0).type_as(x)]  # columns, ones
-
+    #print(stride)
     if not x.is_cuda:
         raise NotImplementedError
     else:

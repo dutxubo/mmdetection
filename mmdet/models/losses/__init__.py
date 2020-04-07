@@ -12,6 +12,8 @@ from .utils import reduce_loss, weight_reduce_loss, weighted_loss
 
 
 from .diou_loss import DIoULoss, CIoULoss, diou_loss, ciou_loss
+from .center_focal_loss import CenterFocalLoss
+from .l1_loss import L1Loss
 
 __all__ = [
     'accuracy', 'Accuracy', 'cross_entropy', 'binary_cross_entropy',
@@ -22,7 +24,8 @@ __all__ = [
     'IoULoss', 'BoundedIoULoss', 'GHMC', 'GHMR', 'reduce_loss',
     'weight_reduce_loss', 'weighted_loss',
     
-    'DIoULoss', 'CIoULoss', 'diou_loss', 'ciou_loss'
+    'DIoULoss', 'CIoULoss', 'diou_loss', 'ciou_loss',
+    'CenterFocalLoss', 'L1Loss'
 
 
 ]

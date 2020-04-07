@@ -507,11 +507,13 @@ class BboxSafeRandomCrop(object):
         margin_h = min( max( img.shape[0] - crop_h, 0 ), min_y)
         margin_w = min( max( img.shape[1] - crop_w, 0 ), min_x)
         
-        
         offset_h = np.random.randint(0, margin_h + 1)
         offset_w = np.random.randint(0, margin_w + 1)
         crop_y1, crop_y2 = offset_h, offset_h + crop_h
         crop_x1, crop_x2 = offset_w, offset_w + crop_w
+        
+        crop_y2 = max(crop_y2, max_y)
+        crop_x2 = max(crop_x2, max_x)
         
         # crop the image
         img = img[crop_y1:crop_y2, crop_x1:crop_x2, :]

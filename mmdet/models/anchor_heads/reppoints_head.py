@@ -586,8 +586,11 @@ class RepPointsHead(nn.Module):
             mlvl_scores.append(scores)
         mlvl_bboxes = torch.cat(mlvl_bboxes)
         if rescale:
-            mlvl_bboxes /= mlvl_bboxes.new_tensor(scale_factor)  # origin code
-            #mlvl_bboxes /= scale_factor.type_as(mlvl_bboxes) # 用于jit.trace
+            if isinstance(scale_factor, torch.Tensor):
+                mlvl_bboxes /= scale_factor.type_as(mlvl_bboxes) # 用于jit.trace
+            else:
+                mlvl_bboxes /= mlvl_bboxes.new_tensor(scale_factor)  # origin code
+            
         
         mlvl_scores = torch.cat(mlvl_scores)
         if self.use_sigmoid_cls:

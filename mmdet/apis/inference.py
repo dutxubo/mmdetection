@@ -124,6 +124,7 @@ def show_result(img,
                 wait_time=0,
                 show=True,
                 thickness=10,
+                font_scale=0.5,
                 out_file=None):
     """Visualize the detection results on the image.
 
@@ -171,6 +172,7 @@ def show_result(img,
         class_names=class_names,
         score_thr=score_thr,
         thickness=thickness,
+        font_scale=font_scale,
         show=show,
         wait_time=wait_time,
         out_file=out_file)
@@ -183,7 +185,8 @@ def show_result_pyplot(img,
                        class_names,
                        score_thr=0.3,
                        fig_size=(15, 10),
-                       thickness=10):
+                       thickness=10,
+                       font_scale=0.5):
     """Visualize the detection results on the image.
 
     Args:
@@ -197,6 +200,7 @@ def show_result_pyplot(img,
             be written to the out file instead of shown in a window.
     """
     img = show_result(
-        img, result, class_names, score_thr=score_thr, show=False, thickness=thickness)
+        img, result, class_names, score_thr=score_thr, show=False, thickness=thickness, font_scale=font_scale)
     plt.figure(figsize=fig_size)
     plt.imshow(mmcv.bgr2rgb(img))
+    

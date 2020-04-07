@@ -71,7 +71,7 @@ class CocoDataset(CustomDataset):
         ann_info = self.coco.loadAnns(ann_ids)
         return self._parse_ann_info(self.img_infos[idx], ann_info)
 
-    def _filter_imgs_ori(self, min_size=32):
+    def _filter_imgs(self, min_size=32):
         """Filter images too small or without ground truths."""
         valid_inds = []
         ids_with_ann = set(_['image_id'] for _ in self.coco.anns.values())
@@ -83,13 +83,13 @@ class CocoDataset(CustomDataset):
         return valid_inds
     
     # added by xubo
-    def _filter_imgs(self, min_size=32):
-        """Filter images too small."""
-        valid_inds = []
-        for i, img_info in enumerate(self.img_infos):
-            if min(img_info['width'], img_info['height']) >= min_size:
-                valid_inds.append(i)
-        return valid_inds
+    #def _filter_imgs(self, min_size=32):
+    #    """Filter images too small."""
+    #    valid_inds = []
+    #    for i, img_info in enumerate(self.img_infos):
+    #        if min(img_info['width'], img_info['height']) >= min_size:
+    #            valid_inds.append(i)
+    #    return valid_inds
 
 
     def _parse_ann_info(self, img_info, ann_info):

@@ -67,7 +67,7 @@ class Erasure(object):
     def __call__(self, results):
         if random.uniform(0,1) > self.p:
             return results
-        
+
         img, boxes, labels = [
             results[k] for k in ('img', 'gt_bboxes', 'gt_labels')
         ]
@@ -253,7 +253,15 @@ class PasteNonDetect(object):
         standard_rect = boxes[standard_indexs[0],:].reshape(-1).astype(np.int32)
         
         h, w = img.shape[:2]
-        paste_region = np.array([[0,standard_rect[3]],[w-1, h-1]] )
+        # non_detect 在下方
+        paste_region1 = np.array([[0,standard_rect[3]],[w-1, h-1]] )
+        # non_detect 在上方
+        paste_region2 = np.array([[0,0],[w-1, standard_rect[1]-1]] )
+        if standard_rect[1] >200:
+            paste_region = random.choice([paste_region1, paste_region2])
+        else:
+            paste_region = paste_region1
+        
         
         paset_img, paste_bbox = random_paste(img, nondetect_img, paste_region )
         

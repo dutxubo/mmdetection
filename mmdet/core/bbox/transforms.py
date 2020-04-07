@@ -198,6 +198,25 @@ def bbox2result(bboxes, labels, num_classes):
         labels = labels.detach().cpu().numpy()
         return [bboxes[labels == i, :] for i in range(num_classes - 1)]
     
+def result2bbox(result):
+    """On the contrary bbox2result
+    
+    Args:
+        list(ndarray): bbox results of each class
+
+    Returns:
+        bboxes (ndarray): shape (n, 5)
+        labels (ndarray): shape (n, )
+    """
+    bboxes = np.vstack(result)
+    labels = [
+        np.full(bbox.shape[0], i, dtype=np.int32)
+        for i, bbox in enumerate(result)
+    ]
+    labels = np.concatenate(labels)
+    
+    return bboxes, labels
+    
 def keypoint2result(keypoints, labels, num_classes, num_keypoints=9):
     """Convert detection results to a list of numpy arrays.
 

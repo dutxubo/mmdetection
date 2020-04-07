@@ -1,0 +1,66 @@
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,py:light
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.3.4
+#   kernelspec:
+#     display_name: py36_cu10_clone
+#     language: python
+#     name: py36_cu10_clone
+# ---
+
+# +
+import os
+import mmcv
+import torch
+import numpy as np
+
+from mmdet import apis
+import imp
+imp.reload(apis)
+
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '7'
+# -
+
+yolo_head_modify_config = 'yolo_head_modify_config.py'
+yolo_modify = apis.init_detector(yolo_head_modify_config, None, device='cuda:0')
+yolo_modify.forward = yolo_modify.forward_dummy
+
+
+# +
+gt_bboxes = torch.tensor([[[10,10,100,100]]]).float().cuda()
+gt_labels = torch.tensor([[1]]).cuda()
+img_metas =[1]
+        
+train_cfg = dict(
+    one_hot_smoother=0.,
+    ignore_config=0.5,
+    xy_use_logit=False,
+    debug=False)
+# -
+
+dumpy_input = torch.randn(1,3,416,416).cuda()
+dumpy_output = yolo_modify(dumpy_input)
+dumpy_input[0,0,0,:10]
+
+
+
+yolo_modify.bbox_head.loss(dumpy_output[0], gt_bboxes,
+             gt_labels,
+             img_metas,
+             train_cfg)
+
+
+
+
+
+feat_0 = torch.randn(1, 512, 13, 13).cuda()
+feat_0 = torch.randn(1, 256, 26, 26).cuda()
+feat_0 = torch.randn(1, 128, 52, 52).cuda()
+
+

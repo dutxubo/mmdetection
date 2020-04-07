@@ -4,7 +4,7 @@ from .geometry import bbox_overlaps
 from .samplers import (BaseSampler, CombinedSampler,
                        InstanceBalancedPosSampler, IoUBalancedNegSampler,
                        PseudoSampler, RandomSampler, SamplingResult)
-from .transforms import (bbox2delta, bbox2result, bbox2roi, bbox_flip,
+from .transforms import (bbox2delta, bbox2result, result2bbox, bbox2roi, bbox_flip,
                          bbox_mapping, bbox_mapping_back, delta2bbox,
                          distance2bbox, roi2bbox)
 
@@ -20,7 +20,7 @@ __all__ = [
     'InstanceBalancedPosSampler', 'IoUBalancedNegSampler', 'CombinedSampler',
     'SamplingResult', 'build_assigner', 'build_sampler', 'assign_and_sample',
     'bbox2delta', 'delta2bbox', 'bbox_flip', 'bbox_mapping',
-    'bbox_mapping_back', 'bbox2roi', 'roi2bbox', 'bbox2result',
+    'bbox_mapping_back', 'bbox2roi', 'roi2bbox', 'bbox2result', 'result2bbox',
     'distance2bbox', 'bbox_target',
     
     'keypoint2result'

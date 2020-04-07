@@ -28,6 +28,3 @@ at::Tensor nms_jit(const at::Tensor& dets, double threshold) {
 #include <torch/script.h>
 static auto registry = torch::jit::RegisterOperators("my_ops::nms_jit", &nms_jit);
 
-
-}
-

@@ -14,11 +14,13 @@ from .ssd_head import SSDHead
 
 from .yolo_head import YoloHead
 from .repkeypoints_head import RepKeyPointsHead
+from .yolo_head_modify import YoloModifyHead
+from .center_head import CenterHead
 __all__ = [
     'AnchorHead', 'GuidedAnchorHead', 'FeatureAdaption', 'RPNHead',
     'GARPNHead', 'RetinaHead', 'RetinaSepBNHead', 'GARetinaHead', 'SSDHead',
     'FCOSHead', 'RepPointsHead', 'FoveaHead', 'FreeAnchorRetinaHead',
 
-    'RepKeyPointsHead', 'ATSSHead', 'YoloHead',
+    'RepKeyPointsHead', 'ATSSHead', 'YoloHead', 'YoloModifyHead', 'CenterHead',
 
 ]
