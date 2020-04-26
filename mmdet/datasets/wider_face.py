@@ -35,7 +35,7 @@ class WIDERFaceDataset(XMLDataset):
             img_infos.append(
                 dict(
                     id=img_id,
-                    filename=osp.join(folder, filename),
+                    filename=osp.join('images', folder, filename),
                     width=width,
                     height=height))
 
