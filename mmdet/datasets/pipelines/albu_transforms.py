@@ -7,7 +7,7 @@ from ..registry import PIPELINES
 import albumentations as A
 from mmcv.runner import obj_from_dict
 
-from ipdb import set_trace
+
 @PIPELINES.register_module
 class AlbuAugmentation(object):
     '''

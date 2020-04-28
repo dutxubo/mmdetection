@@ -19,40 +19,24 @@ from mmdet.utils import collect_env, get_root_logger
 
 import warnings
 warnings.filterwarnings("ignore", message='.*deprecated.*')
-warnings.filterwarnings("ignore", message='.*sourceTensor.clone().detach().*')
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Train a detector')
-    parser.add_argument('config', help='train config file path')
-    parser.add_argument('--work_dir', help='the dir to save logs and models')
-    parser.add_argument(
-        '--resume_from', help='the checkpoint file to resume from')
-    parser.add_argument(
-        '--validate',
-        action='store_true',
-        help='whether to evaluate the checkpoint during training')
-    parser.add_argument(
-        '--gpus',
-        type=int,
-        default=1,
-        help='number of gpus to use '
-        '(only applicable to non-distributed training)')
-    parser.add_argument('--seed', type=int, default=None, help='random seed')
-    parser.add_argument(
-        '--deterministic',
-        action='store_true',
-        help='whether to set deterministic options for CUDNN backend.')
-    parser.add_argument(
-        '--launcher',
-        choices=['none', 'pytorch', 'slurm', 'mpi'],
-        default='none',
-        help='job launcher')
-    parser.add_argument('--local_rank', type=int, default=0)
-    parser.add_argument(
-        '--autoscale-lr',
-        action='store_true',
-        help='automatically scale lr with the number of gpus')
-    args = parser.parse_args()
+    args = dict()
+    args['config'] = '/home/songbai.xb/detection/mmdetection/myproject/coco/configs/centernet/centernet_r50_fpn_toytest.py'
+    #args['config'] = '/home/songbai.xb/detection/mmdetection/myproject/coco/configs/fcos_r50_caffe_fpn_gn_toytest.py'
+    #args['config'] = '/home/songbai.xb/detection/mmdetection/myproject/coco/configs/reppoints_minmax_r50_fpn_toytest.py'
+    args['work_dir'] = None
+    args['resume_from'] = None
+    args['validate'] = False
+    args['gpus'] = 1
+    args['seed'] = 0
+    args['deterministic'] = False
+    args['launcher'] = 'none'
+    args['local_rank'] = 0
+    args['autoscale_lr'] = False
+
+    args = Config(args)
+
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
 
@@ -60,6 +44,8 @@ def parse_args():
 
 
 def main():
+
+
     args = parse_args()
 
     cfg = Config.fromfile(args.config)
@@ -140,6 +126,7 @@ def main():
         validate=args.validate,
         timestamp=timestamp,
         meta=meta)
+
 
 if __name__ == '__main__':
     main()

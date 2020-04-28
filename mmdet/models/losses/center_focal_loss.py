@@ -1,7 +1,9 @@
 
 import torch
 import torch.nn as nn
+
 from ..registry import LOSSES
+
 
 def _neg_loss(pred, gt):
     ''' Modified focal loss. Exactly the same as CornerNet.
@@ -25,7 +27,7 @@ def _neg_loss(pred, gt):
 
     pos_loss = pos_loss.sum()
     neg_loss = neg_loss.sum()
-
+    
     count = int(num_pos.cpu().detach())
     if  count == 0:
         loss = loss - neg_loss
@@ -36,9 +38,10 @@ def _neg_loss(pred, gt):
 @LOSSES.register_module
 class CenterFocalLoss(nn.Module):
     '''nn.Module warpper for focal loss'''
-    def __init__(self):
+    def __init__(self, reduction='mean', loss_weight=1.0):
         super(CenterFocalLoss, self).__init__()
         self.neg_loss = _neg_loss
+        self.loss_weight = loss_weight
 
     def forward(self, out, target):
-        return self.neg_loss(out, target)
+        return self.loss_weight * self.neg_loss(out, target)

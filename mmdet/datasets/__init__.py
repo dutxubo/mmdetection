@@ -10,6 +10,7 @@ from .wider_face import WIDERFaceDataset
 from .xml_style import XMLDataset
 
 from .file_dataset import FilesDataset
+from .toy import ToyDataset
 
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     'CityscapesDataset', 'GroupSampler', 'DistributedGroupSampler',
     'build_dataloader', 'ConcatDataset', 'RepeatDataset', 'WIDERFaceDataset',
     'DATASETS', 'build_dataset',
-    'FilesDataset'
+    'FilesDataset', 
+    'ToyDataset'
         ]
     

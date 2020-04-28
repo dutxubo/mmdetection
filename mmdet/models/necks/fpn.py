@@ -60,7 +60,8 @@ class FPN(nn.Module):
                  no_norm_on_lateral=False,
                  conv_cfg=None,
                  norm_cfg=None,
-                 activation=None):
+                 activation=None,
+                 activation_num=-1):
         super(FPN, self).__init__()
         assert isinstance(in_channels, list)
         self.in_channels = in_channels
@@ -71,6 +72,7 @@ class FPN(nn.Module):
         self.relu_before_extra_convs = relu_before_extra_convs
         self.no_norm_on_lateral = no_norm_on_lateral
         self.fp16_enabled = False
+        self.activation_num = (num_outs if activation_num==-1 else activation_num)
 
         if end_level == -1:
             self.backbone_end_level = self.num_ins
@@ -178,7 +180,7 @@ class FPN(nn.Module):
                         outs.append(self.fpn_convs[i](F.relu(outs[-1])))
                     else:
                         outs.append(self.fpn_convs[i](outs[-1]))
-        return tuple(outs)
-
+        #return tuple(outs)
+        return tuple([out for i, out in enumerate(outs) if i<self.activation_num])
     
     
