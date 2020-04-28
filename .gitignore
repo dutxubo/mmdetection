@@ -118,6 +118,7 @@ work_dirs/
 # Pytorch
 *.pth
 *.ipynb
+/myproject
 /myprojects
 /myplate
 
