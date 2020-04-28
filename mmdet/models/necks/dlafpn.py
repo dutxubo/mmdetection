@@ -26,7 +26,6 @@ class DLAFPN(nn.Module):
     def __init__(self,
                  in_channels,
                  out_channels,
-                 num_outs=5,
                  pooling_type='AVG',
                  conv_cfg=None,
                  norm_cfg=None,
@@ -36,34 +35,17 @@ class DLAFPN(nn.Module):
         self.in_channels = in_channels # 64?
         self.out_channels = out_channels
         self.num_ins = len(in_channels)
-        self.num_outs = num_outs
         self.with_cp = with_cp
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
 
-        self.reduction_conv = ConvModule(
-            sum(in_channels),
-            #in_channels,
-            out_channels,
-            kernel_size=1,
-            conv_cfg=self.conv_cfg,
-            activation=None)
+        self.dc1 = nn.ConvTranspose2d(2048,512,2,2)
+        self.dc2 = nn.ConvTranspose2d(1536,256,2,2)
+        self.dc3 = nn.ConvTranspose2d(768,out_channels,2,2)
 
-        self.fpn_convs = nn.ModuleList()
-        for i in range(self.num_outs):
-            self.fpn_convs.append(
-                ConvModule(
-                    out_channels,
-                    out_channels,
-                    kernel_size=3,
-                    padding=1,
-                    conv_cfg=self.conv_cfg,
-                    activation=None))
 
-        if pooling_type == 'MAX':
-            self.pooling = F.max_pool2d
-        else:
-            self.pooling = F.avg_pool2d
+
+
 
     def init_weights(self):
         print("init weights in dlafpn")
@@ -76,24 +58,15 @@ class DLAFPN(nn.Module):
         #for i in range(len(inputs)):
         #    print(inputs[i].shape)
         assert len(inputs) == self.num_ins
-        outs = [inputs[0]]
-        for i in range(1, self.num_ins):
-            outs.append(
-                F.interpolate(inputs[i], scale_factor=2**i, mode='bilinear'))
-        out = torch.cat(outs, dim=1)
-        if out.requires_grad and self.with_cp:
-            out = checkpoint(self.reduction_conv, out)
-        else:
-            out = self.reduction_conv(out)
-        outs = [out]
-        for i in range(1, self.num_outs):
-            outs.append(self.pooling(out, kernel_size=2**i, stride=2**i))
-        outputs = []
 
-        for i in range(self.num_outs):
-            if outs[i].requires_grad and self.with_cp:
-                tmp_out = checkpoint(self.fpn_convs[i], outs[i])
-            else:
-                tmp_out = self.fpn_convs[i](outs[i])
-            outputs.append(tmp_out)
-        return tuple(outputs)
+        # x1, x2, x3, x4 -> x4, x3, x2, x1
+        x1, x2, x3, x4 = inputs
+
+        h = self.dc1(x4)
+        h = self.dc2(torch.cat([x3, h],1))
+        h = self.dc3(torch.cat([x2, h],1))
+        
+
+            
+        
+        return tuple([h])

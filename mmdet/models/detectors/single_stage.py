@@ -28,6 +28,7 @@ class SingleStageDetector(BaseDetector):
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
         self.init_weights(pretrained=pretrained)
+        self.train_batch = 0
 
     def init_weights(self, pretrained=None):
         super(SingleStageDetector, self).init_weights(pretrained)
@@ -68,6 +69,30 @@ class SingleStageDetector(BaseDetector):
         loss_inputs = outs + (gt_bboxes, gt_labels, img_metas, self.train_cfg)
         losses = self.bbox_head.loss(
             *loss_inputs, gt_bboxes_ignore=gt_bboxes_ignore)
+
+        self.train_batch += 1
+        # debug
+        debug = False
+        if debug:
+            if self.train_batch % 100 == 0 :
+                import matplotlib.pyplot as plt
+                import numpy as np
+                import cv2
+                im = img[0].permute(1, 2, 0).cpu().squeeze().numpy()*255
+                pred_mask = outs[0][0][0].clone().permute(1, 2, 0).cpu().detach().squeeze(-1).numpy()*255
+                
+                bbox = gt_bboxes[0][0].cpu().numpy().astype(np.int)
+                cv2.rectangle(im, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
+
+                plt.subplot(1, 2, 1)
+                plt.title('Image')
+                plt.imshow(im.astype(np.int))
+
+                plt.subplot(1, 2, 2)
+                plt.title('Mask Prediction')
+                plt.imshow(pred_mask)
+                plt.suptitle('Score {:.3f}'.format(pred_mask.max()))
+                plt.savefig(f'/home/songbai.xb/detection/mmdetection/tmp.jpg')
         return losses
     #@profile
     def simple_test(self, img, img_meta, rescale=False):

@@ -9,7 +9,7 @@ from ..registry import LOSSES
 def l1_loss(pred, target):
     assert pred.size() == target.size() and target.numel() > 0
     diff = torch.abs(pred - target)
-    loss = diff
+    loss = diff 
     return loss
 
 

@@ -55,7 +55,7 @@ class CenterHead(nn.Module):
         self.use_cross = use_cross
 
         self._init_layers()
-
+    
     def _init_layers(self):
         self.cls_convs = nn.ModuleList()
         self.wh_convs = nn.ModuleList()
@@ -105,13 +105,10 @@ class CenterHead(nn.Module):
             normal_init(m.conv, std=0.01)
             
         bias_hm = bias_init_with_prob(0.01) 
-        normal_init(self.center_hm, std=0.01, bias=bias_hm)
+        normal_init(self.center_hm, std=0.01, bias=bias_hm) 
         normal_init(self.center_wh, std=0.01)
         normal_init(self.center_offset, std=0.01)
 
-        #self.center_hm.bias.data.fill_(-2.19)
-        #nn.init.constant_(self.center_wh.bias, 0)
-        #nn.init.constant_(self.center_offset.bias, 0)
 
     def forward(self, feats):
         return multi_apply(self.forward_single, feats)
@@ -134,6 +131,10 @@ class CenterHead(nn.Module):
         offset_pred = self.center_offset(offset_feat)
         
         return cls_score, wh_pred, offset_pred
+
+    
+
+        
 
     @force_fp32(apply_to=('cls_scores', 'wh_preds', 'offset_preds'))
     def loss(self,
@@ -180,13 +181,10 @@ class CenterHead(nn.Module):
         flatten_offset_preds = torch.cat(flatten_offset_preds)
        
         # targets
-        flatten_heatmaps = torch.cat(heatmaps)
-        flatten_wh_targets = torch.cat(wh_targets) # torch.Size([all_level_points, 2])
-        flatten_offset_targets = torch.cat(offset_targets)
+        flatten_heatmaps = torch.cat(heatmaps).type_as(flatten_cls_scores)
+        flatten_wh_targets = torch.cat(wh_targets).type_as(flatten_cls_scores) # torch.Size([all_level_points, 2])
+        flatten_offset_targets = torch.cat(offset_targets).type_as(flatten_cls_scores)
 
-        # repeat points to align with bbox_preds
-        # flatten_points = torch.cat(
-        #     [points.repeat(num_imgs, 1) for points in all_level_points])
 
         # pos_inds = flatten_labels.nonzero().reshape(-1)
         #print(flatten_wh_targets.shape)
@@ -202,9 +200,10 @@ class CenterHead(nn.Module):
         #     avg_factor=num_pos + num_imgs)  # avoid num_pos is 0
         flatten_cls_scores = torch.clamp(flatten_cls_scores.sigmoid_(), min=1e-4, max=1-1e-4)
         loss_hm = self.loss_hm(flatten_cls_scores, flatten_heatmaps)
+        #flatten_cls_scores = torch.clamp(flatten_cls_scores, min=1e-4, max=1-1e-4)
+        #loss_hm = self.loss_hm(flatten_cls_scores, flatten_heatmaps.long())
         
         pos_wh_targets = flatten_wh_targets[center_inds]
-        #print(pos_wh_targets.shape)
         pos_wh_preds = flatten_wh_preds[center_inds]
         
         pos_offset_preds = flatten_offset_preds[center_inds]
@@ -318,17 +317,16 @@ class CenterHead(nn.Module):
         # get the target shape for each image
         for i in range(num_levels):
             h, w = self.featmap_sizes[i]
-            hm = np.zeros((self.cls_out_channels, h, w), dtype=np.float32)
+            hm = torch.zeros(self.cls_out_channels, h, w)   #np.zeros((self.cls_out_channels, h, w), dtype=np.float32)
             heatmaps_targets.append(hm)
-            wh = np.zeros((h, w, 2), dtype=np.float32)
+            wh = torch.zeros(h, w, 2)    #np.zeros((h, w, 2), dtype=np.float32)
             wh_targets.append(wh)
-            offset = np.zeros((h, w, 2), dtype=np.float32)
+            offset = torch.zeros(h, w, 2)   #np.zeros((h, w, 2), dtype=np.float32)
             offset_targets.append(offset)
 
         for k in range(num_objs):
             bbox = gt_bboxes[k]
             cls_id = gt_labels[k] # [1~80]
-            
                 
             # condition: in the regress_ranges
             origin_h, origin_w = bbox[3] - bbox[1], bbox[2] - bbox[0]
@@ -364,7 +362,7 @@ class CenterHead(nn.Module):
                 bbox[[0, 2]] = np.clip(bbox[[0, 2]], 0, output_w - 1) #x1, x2
                 bbox[[1, 3]] = np.clip(bbox[[1, 3]], 0, output_h - 1)
                 h, w = bbox[3] - bbox[1], bbox[2] - bbox[0]
-                #print(h, w)
+
                 # 转换到当层
                 if h > 0 and w > 0:
                     radius = gaussian_radius((math.ceil(h), math.ceil(w)))
@@ -408,33 +406,27 @@ class CenterHead(nn.Module):
                 offset_targets[index_level] = offset
 
         flatten_heatmaps_targets = [
-            hm.transpose(1, 2, 0).reshape(-1, self.cls_out_channels)
+            hm.permute(1, 2, 0).reshape(-1, self.cls_out_channels)
             for hm in heatmaps_targets
         ]
         #for i in range(len(flatten_heatmaps_targets)):
         #    print(flatten_heatmaps_targets[i].shape)
             
-        heatmaps_targets = np.concatenate(flatten_heatmaps_targets, axis=0) 
+        heatmaps_targets = torch.cat(flatten_heatmaps_targets, dim=0) 
         #print(heatmaps_targets.shape) # (13343, 80)
         #print(heatmaps_targets)
         
         flatten_wh_targets = [
             wh.reshape(-1, 2) for wh in wh_targets
         ]
-        wh_targets = np.concatenate(flatten_wh_targets)
+        wh_targets = torch.cat(flatten_wh_targets)
         
         flatten_offset_targets = [
             offset.reshape(-1, 2) for offset in offset_targets
         ]
-        offset_targets = np.concatenate(flatten_offset_targets)
+        offset_targets = torch.cat(flatten_offset_targets)
 
-        # transform the heatmaps_targets, wh_targets, offset_targets into tensor
-        heatmaps_targets = torch.from_numpy(np.stack(heatmaps_targets))
-        heatmaps_targets = torch.tensor(heatmaps_targets.detach(), dtype=self.tensor_dtype, device=self.tensor_device)
-        wh_targets = torch.from_numpy(np.stack(wh_targets))
-        wh_targets = torch.tensor(wh_targets.detach(), dtype=self.tensor_dtype, device=self.tensor_device)
-        offset_targets = torch.from_numpy(np.stack(offset_targets))
-        offset_targets = torch.tensor(offset_targets.detach(), dtype=self.tensor_dtype, device=self.tensor_device)
+       
         
         return heatmaps_targets, wh_targets, offset_targets
 
@@ -581,7 +573,10 @@ def draw_umich_gaussian(heatmap, center, radius, k=1):
     masked_heatmap  = heatmap[y - top:y + bottom, x - left:x + right]
     masked_gaussian = gaussian[radius - top:radius + bottom, radius - left:radius + right]
     if min(masked_gaussian.shape) > 0 and min(masked_heatmap.shape) > 0: # TODO debug
-        np.maximum(masked_heatmap, masked_gaussian * k, out=masked_heatmap)
+        #np.maximum(masked_heatmap, masked_gaussian * k, out=masked_heatmap)
+        heatmap[y - top:y + bottom, x - left:x + right] = masked_heatmap.new_tensor(np.maximum(masked_heatmap, masked_gaussian * k) )
+        #masked_heatmap = torch.where(masked_heatmap>masked_gaussian * k, masked_heatmap,
+        #   masked_gaussian * k)
     return heatmap
 
 def affine_transform(pt, t):
