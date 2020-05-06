@@ -3,10 +3,10 @@ import torch.nn as nn
 from mmcv.cnn import normal_init
 
 from mmdet.core import multi_apply, multiclass_nms
-from mmdet.ops import DeformConv
+from mmdet.ops import ConvModule, DeformConv
 from ..builder import build_loss
 from ..registry import HEADS
-from ..utils import ConvModule, bias_init_with_prob
+from ..utils import bias_init_with_prob
 
 INF = 1e8
 
@@ -224,9 +224,10 @@ class FoveaHead(nn.Module):
                 pos_weights,
                 avg_factor=num_pos)
         else:
-            loss_bbox = torch.tensor([0],
-                                     dtype=flatten_bbox_preds.dtype,
-                                     device=flatten_bbox_preds.device)
+            loss_bbox = torch.tensor(
+                0,
+                dtype=flatten_bbox_preds.dtype,
+                device=flatten_bbox_preds.device)
         return dict(loss_cls=loss_cls, loss_bbox=loss_bbox)
 
     def fovea_target(self, gt_bbox_list, gt_label_list, featmap_sizes, points):

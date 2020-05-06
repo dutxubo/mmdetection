@@ -4,8 +4,8 @@ import torch.nn.functional as F
 from mmcv.cnn import xavier_init
 
 from mmdet.core import auto_fp16
+from mmdet.ops import ConvModule
 from ..registry import NECKS
-from ..utils import ConvModule
 
 
 @NECKS.register_module
@@ -61,14 +61,14 @@ class FPN(nn.Module):
                  conv_cfg=None,
                  norm_cfg=None,
                  activation=None,
-                 activation_num=-1):
+                 activation_num=-1,
+                 act_cfg=None):
         super(FPN, self).__init__()
         assert isinstance(in_channels, list)
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.num_ins = len(in_channels)
         self.num_outs = num_outs
-        self.activation = activation
         self.relu_before_extra_convs = relu_before_extra_convs
         self.no_norm_on_lateral = no_norm_on_lateral
         self.fp16_enabled = False
@@ -97,7 +97,7 @@ class FPN(nn.Module):
                 1,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg if not self.no_norm_on_lateral else None,
-                activation=self.activation,
+                act_cfg=act_cfg,
                 inplace=False)
             fpn_conv = ConvModule(
                 out_channels,
@@ -106,7 +106,7 @@ class FPN(nn.Module):
                 padding=1,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
-                activation=self.activation,
+                act_cfg=act_cfg,
                 inplace=False)
 
             self.lateral_convs.append(l_conv)
@@ -128,7 +128,7 @@ class FPN(nn.Module):
                     padding=1,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
-                    activation=self.activation,
+                    act_cfg=act_cfg,
                     inplace=False)
                 self.fpn_convs.append(extra_fpn_conv)
 
