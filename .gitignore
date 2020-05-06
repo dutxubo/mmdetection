@@ -107,6 +107,7 @@ mmdet/version.py
 data
 .vscode
 .idea
+.DS_Store
 
 # custom
 *.pkl
@@ -118,6 +119,7 @@ work_dirs/
 # Pytorch
 *.pth
 *.ipynb
+/myproject
 /myprojects
 /myplate
 

@@ -1,7 +1,7 @@
 # model settings
 model = dict(
     type='FCOS',
-    pretrained='torchvision://resnet50',
+    pretrained='open-mmlab://resnet50_caffe',
     backbone=dict(
         type='ResNet',
         depth=50,
@@ -9,31 +9,23 @@ model = dict(
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
         norm_cfg=dict(type='BN', requires_grad=False),
-        style='pytorch'),
+        style='caffe'),
     neck=dict(
-        type='DLAFPN',
+        type='FPN',
         in_channels=[256, 512, 1024, 2048],
         out_channels=256,
-        ),
-    #neck=dict(
-    #    type='FPN',
-    #    in_channels=[256, 512, 1024, 2048],
-    #    out_channels=256,
-    #    start_level=0,
-    #    add_extra_convs=True,
-    #    extra_convs_on_inputs=False,  # use P5
-    #    num_outs=4,
-    #    relu_before_extra_convs=True,
-    #    activation_num=1,),
+        start_level=1,
+        add_extra_convs=True,
+        extra_convs_on_inputs=False,  # use P5
+        num_outs=5,
+        relu_before_extra_convs=True),
     bbox_head=dict(
         type='FCOSHead',
-        num_classes=2,
+        num_classes=81,
         in_channels=256,
-        stacked_convs=1,
+        stacked_convs=4,
         feat_channels=256,
-        #strides=[8, 16, 32, 64, 128],
-        strides=[4],
-        regress_ranges=((-1, 1e8),),
+        strides=[8, 16, 32, 64, 128],
         loss_cls=dict(
             type='FocalLoss',
             use_sigmoid=True,
@@ -42,7 +34,9 @@ model = dict(
             loss_weight=1.0),
         loss_bbox=dict(type='IoULoss', loss_weight=1.0),
         loss_centerness=dict(
-            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0)))
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
+        center_sampling=True,
+        center_sample_radius=1.5))
 # training and testing settings
 train_cfg = dict(
     assigner=dict(
@@ -61,41 +55,53 @@ test_cfg = dict(
     nms=dict(type='nms', iou_thr=0.5),
     max_per_img=100)
 # dataset settings
-dataset_type = 'ToyDataset'
+dataset_type = 'CocoDataset'
+data_root = 'data/coco/'
+img_norm_cfg = dict(
+    mean=[102.9801, 115.9465, 122.7717], std=[1.0, 1.0, 1.0], to_rgb=False)
 train_pipeline = [
-    
-    #dict(type='Resize', img_scale=(512, 512), keep_ratio=True, min_rescale=True),
-
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
+    dict(type='RandomFlip', flip_ratio=0.5),
+    dict(type='Normalize', **img_norm_cfg),
+    dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
 test_pipeline = [
+    dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(256, 256),
+        img_scale=(1333, 800),
         flip=False,
         transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(type='Normalize', **img_norm_cfg),
+            dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img']),
         ])
 ]
 data = dict(
-    imgs_per_gpu=8,
+    imgs_per_gpu=4,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
-        img_shape=(256, 256),
+        ann_file=data_root + 'annotations/instances_train2017.json',
+        img_prefix=data_root + 'train2017/',
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        img_shape=(256, 256),
-        pipeline=test_pipeline,
-        test_mode=True),
+        ann_file=data_root + 'annotations/instances_val2017.json',
+        img_prefix=data_root + 'val2017/',
+        pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
-        img_shape=(256, 256),
-        pipeline=test_pipeline,
-        test_mode=True))
+        ann_file=data_root + 'annotations/instances_val2017.json',
+        img_prefix=data_root + 'val2017/',
+        pipeline=test_pipeline))
 evaluation = dict(interval=1, metric='bbox')
 # optimizer
 optimizer = dict(
@@ -115,7 +121,7 @@ lr_config = dict(
 checkpoint_config = dict(interval=1)
 # yapf:disable
 log_config = dict(
-    interval=100,
+    interval=50,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
@@ -123,10 +129,9 @@ log_config = dict(
 # yapf:enable
 # runtime settings
 total_epochs = 12
-device_ids = range(4)
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './myproject/coco/work_dirs/fcos_r50_caffe_fpn_gn_toytest'
+work_dir = './work_dirs/fcos_center_r50_caffe_fpn_gn_1x_4gpu'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
