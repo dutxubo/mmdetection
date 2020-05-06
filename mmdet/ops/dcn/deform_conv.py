@@ -2,6 +2,7 @@ import math
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.autograd import Function
 from torch.autograd.function import once_differentiable
 from torch.nn.modules.utils import _pair, _single
@@ -306,7 +307,6 @@ class DeformConv(nn.Module):
 
 
 
-
 class DeformConvPack(DeformConv):
     """A Deformable Conv Encapsulation that acts as normal Conv layers.
 
@@ -335,6 +335,7 @@ class DeformConvPack(DeformConv):
             kernel_size=self.kernel_size,
             stride=_pair(self.stride),
             padding=_pair(self.padding),
+            dilation=_pair(self.dilation),
             bias=True)
         self.init_offset()
 
@@ -453,6 +454,7 @@ class ModulatedDeformConvPack(ModulatedDeformConv):
             kernel_size=self.kernel_size,
             stride=_pair(self.stride),
             padding=_pair(self.padding),
+            dilation=_pair(self.dilation),
             bias=True)
         self.init_offset()
 
