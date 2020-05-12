@@ -96,7 +96,7 @@ class SingleStageDetector(BaseDetector):
         return losses
 
     #@profile
-    def simple_test(self, img, img_meta, rescale=False):
+    def simple_test(self, img, img_metas, rescale=False):
         x = self.extract_feat(img)
         outs = self.bbox_head(x)
         bbox_inputs = outs + (img_metas, self.test_cfg, rescale)

@@ -13,9 +13,10 @@ import pdb
 #import torch.nn.functional as F
 
 from mmdet.core import multi_apply, multiclass_nms, distance2bbox, force_fp32
+from mmdet.ops import Scale, ConvModule
 from ..builder import build_loss
 from ..registry import HEADS
-from ..utils import bias_init_with_prob, Scale, ConvModule
+from ..utils import bias_init_with_prob
 
 INF = 1e8
 

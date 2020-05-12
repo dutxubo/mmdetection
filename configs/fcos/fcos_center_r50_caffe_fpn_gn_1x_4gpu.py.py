@@ -130,6 +130,7 @@ log_config = dict(
 # runtime settings
 total_epochs = 12
 dist_params = dict(backend='nccl')
+find_unused_parameters=True
 log_level = 'INFO'
 work_dir = './work_dirs/fcos_center_r50_caffe_fpn_gn_1x_4gpu'
 load_from = None

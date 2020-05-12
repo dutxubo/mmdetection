@@ -1,7 +1,8 @@
 # model settings
 model = dict(
     type='FCOS',
-    pretrained='open-mmlab://resnet50_caffe',
+    #pretrained='open-mmlab://resnet50_caffe',
+    pretrained='torchvision://resnet50',
     backbone=dict(
         type='ResNet',
         depth=50,
@@ -9,7 +10,8 @@ model = dict(
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
         norm_cfg=dict(type='BN', requires_grad=False),
-        style='caffe'),
+        #style='caffe'
+        ),
     neck=dict(
         type='FPN',
         in_channels=[256, 512, 1024, 2048],
@@ -21,8 +23,8 @@ model = dict(
         relu_before_extra_convs=True),
     bbox_head=dict(
         type='FCOSHead',
-        num_classes=81,
-        in_channels=256,
+        num_classes=2, # +1
+        in_channels=256, 
         stacked_convs=4,
         feat_channels=256,
         strides=[8, 16, 32, 64, 128],
@@ -55,12 +57,15 @@ test_cfg = dict(
 # dataset settings
 dataset_type = 'CocoDataset'
 data_root = '/home/songbai.xb/datasets/cn_datasets/cnhuman/'
+#img_norm_cfg = dict(
+#    mean=[102.9801, 115.9465, 122.7717], std=[1.0, 1.0, 1.0], to_rgb=False)
 img_norm_cfg = dict(
-    mean=[102.9801, 115.9465, 122.7717], std=[1.0, 1.0, 1.0], to_rgb=False)
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
+    #dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
+    dict(type='Resize', img_scale=(512, 512), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
@@ -71,7 +76,8 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1333, 800),
+        #img_scale=(1333, 800),
+        img_scale=(512, 512),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -104,7 +110,7 @@ evaluation = dict(interval=1, metric='bbox')
 # optimizer
 optimizer = dict(
     type='SGD',
-    lr=0.01,
+    lr=0.01/2,
     momentum=0.9,
     weight_decay=0.0001,
     paramwise_options=dict(bias_lr_mult=2., bias_decay_mult=0.))
@@ -130,7 +136,8 @@ total_epochs = 12
 
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = '/home/songbai.xb/research/detection/mmdetection/myproject/cnhuman/work_dirs/fcos_r50_caffe_fpn_gn_1x_4gpu'
+#work_dir = '/home/songbai.xb/research/detection/mmdetection/myproject/cnhuman/work_dirs/fcos_r50_caffe_fpn_gn_1x_4gpu'
+work_dir = '/home/songbai.xb/research/detection/mmdetection/myproject/cnhuman/work_dirs/fcos_r50_fpn_gn_4gpu_512'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]

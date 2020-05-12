@@ -840,23 +840,6 @@ class MinIoURandomCrop(object):
                 # adjust the img no matter whether the gt is empty before crop
                 img = img[patch[1]:patch[3], patch[0]:patch[2]]
                 results['img'] = img
-<<<<<<< HEAD
-                results['gt_bboxes'] = boxes
-                results['gt_labels'] = labels
-
-                if 'gt_masks' in results:
-                    valid_masks = [
-                        results['gt_masks'][i] for i in range(len(mask))
-                        if mask[i]
-                    ]
-                    results['gt_masks'] = np.stack([
-                        gt_mask[patch[1]:patch[3], patch[0]:patch[2]]
-                        for gt_mask in valid_masks
-                    ])
-                        
-=======
-
->>>>>>> 0f33c08d8d46eba8165715a0995841a975badfd4
                 # not tested
                 if 'gt_semantic_seg' in results:
                     results['gt_semantic_seg'] = results['gt_semantic_seg'][

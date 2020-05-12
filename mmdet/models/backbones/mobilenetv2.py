@@ -9,6 +9,7 @@ import torch.nn as nn
 from mmdet.utils import get_root_logger
 from mmcv.runner import load_checkpoint
 from mmcv.cnn import constant_init, kaiming_init
+from torch.nn.modules.batchnorm import _BatchNorm
 from ..registry import BACKBONES
 from torchvision.models.utils import load_state_dict_from_url
 
